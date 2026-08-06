@@ -44,10 +44,10 @@ export const LoginPage = () => {
         </div>
         
         <h2 className="text-2xl font-bold text-center text-white tracking-tight mb-1">
-          Selamat Datang
+          Selamat Datang Di Handtalk
         </h2>
         <p className="text-sm text-[#B5B5B5] text-center mb-6">
-          Masuk untuk Belajar
+          Masuk untuk Mulai Belajar
         </p>
 
         {errorMsg && (
