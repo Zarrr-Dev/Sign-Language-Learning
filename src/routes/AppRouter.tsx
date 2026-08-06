@@ -4,17 +4,21 @@ import { LoginPage } from '../pages/LoginPage'
 import { RegisterPage } from '../pages/RegisterPage'
 import { ProtectedRoute } from './ProtectedRoute'
 import { DashboardLayout } from '../layouts/DashboardLayout'
+import { LearnPage } from '../pages/LearnPage'
+import { QuizPage } from '../pages/QuizPage'
 
 export const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes */}
+        {/* Landing Page */}
         <Route path="/" element={<LandingPage />} />
+        
+        {/* Auth Pages */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         
-        {/* Protected Dashboard Routes */}
+        {/* Protected Dashboard Area */}
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
             <Route 
@@ -26,22 +30,16 @@ export const AppRouter = () => {
                 </div>
               } 
             />
-            <Route 
-              path="/dashboard/learn" 
-              element={<div className="text-white">Halaman Belajar (Modul Isyarat)</div>} 
-            />
-            <Route 
-              path="/dashboard/quiz" 
-              element={<div className="text-white">Halaman Kuis & Evaluasi</div>} 
-            />
+            <Route path="/dashboard/learn" element={<LearnPage />} />
+            <Route path="/dashboard/quiz" element={<QuizPage />} />
             <Route 
               path="/dashboard/profile" 
-              element={<div className="text-white">Halaman Profil Pengguna</div>} 
+              element={<div className="text-white">Halaman Profil Pengguna (Coming Soon)</div>} 
             />
           </Route>
         </Route>
 
-        {/* Fallback Route */}
+        {/* Fallback Redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
