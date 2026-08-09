@@ -39,10 +39,10 @@ export const DashboardLayout = () => {
   return (
     <div className="min-h-screen bg-[#000000] text-white flex flex-col md:flex-row font-sans">
       
-      {/* Sidebar Desktop */}
+
       <aside className="hidden md:flex flex-col w-64 bg-[#0F0F0F] border-r border-white/[0.08] p-5 h-screen sticky top-0 z-30 justify-between">
         <div>
-          {/* Logo Brand */}
+
           <Link to="/dashboard" className="flex items-center gap-3 px-2 py-3 mb-6">
             <div className="p-2 bg-blue-600/10 rounded-xl border border-blue-500/20 text-blue-400">
               <Sparkles className="w-5 h-5" />
@@ -52,7 +52,6 @@ export const DashboardLayout = () => {
             </span>
           </Link>
 
-          {/* Navigasi Utama */}
           <nav className="space-y-1.5">
             {navItems.map((item) => {
               const Icon = item.icon
@@ -75,7 +74,6 @@ export const DashboardLayout = () => {
           </nav>
         </div>
 
-        {/* Tombol Logout Sidebar */}
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors w-full border border-transparent hover:border-red-500/20"
@@ -85,10 +83,8 @@ export const DashboardLayout = () => {
         </button>
       </aside>
 
-      {/* Area Konten Utama */}
       <div className="flex-1 flex flex-col min-w-0">
         
-        {/* Top Navigation Bar */}
         <header className="h-16 bg-[#0F0F0F]/80 backdrop-blur-xl border-b border-white/[0.08] px-6 flex items-center justify-between sticky top-0 z-20">
           <div className="flex items-center gap-3 md:hidden">
             <button 
@@ -102,11 +98,10 @@ export const DashboardLayout = () => {
 
           <div className="hidden md:block">
             <h2 className="text-sm font-semibold text-[#B5B5B5]">
-              Selamat datang kembali, <span className="text-white">{user?.user_metadata?.full_name || user?.email}</span>!
+              Selamat datang kembali,<span className="text-white">{user?.user_metadata?.full_name || user?.email}</span>!
             </h2>
           </div>
 
-          {/* Badge Streak */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold">
               <Flame className="w-4 h-4 fill-amber-400" />
@@ -119,7 +114,7 @@ export const DashboardLayout = () => {
           </div>
         </header>
 
-        {/* Mobile Nav Overlay */}
+
         {mobileMenuOpen && (
           <div className="md:hidden bg-[#0F0F0F] border-b border-white/[0.08] p-4 space-y-2">
             {navItems.map((item) => {
@@ -149,7 +144,6 @@ export const DashboardLayout = () => {
           </div>
         )}
 
-        {/* Dynamic Nested Content */}
         <main className="p-6 md:p-8 flex-1 bg-[#000000]">
           <Outlet />
         </main>

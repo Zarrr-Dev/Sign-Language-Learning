@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "agentrouter": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "AgentRouter",
+      "apiKey": "integrated-via-headers",
+      "options": {
+        "baseURL": "https://agentrouter.org",
+        "headers": {
+          "Authorization": "Bearer TOKEN_AGENTROUTER_KAMU"
+        }
+      },
+      "models": {
+        "claude-opus-5": {
+          "name": "Claude Opus 5"
+        }
+      }
+    }
+  },
+  "model": "agentrouter/claude-opus-5"
+}

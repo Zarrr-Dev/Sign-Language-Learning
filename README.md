@@ -1,75 +1,44 @@
-# React + TypeScript + Vite
+# HandTalk Learn
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Platform belajar Bahasa Isyarat (ISINDO/SIBI) interaktif berbasis web dengan desain modern.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Fitur Utama
 
-## React Compiler
+* **Auth System**: Login & Register terintegrasi dengan Supabase Auth.
+* **Dashboard**: Ringkasan progres belajar, streak harian, dan kuis.
+* **Modul Belajar (`/learn`)**: Kartu materi isyarat + Modal Video Player HD + Fitur pencarian instan.
+* **Kuis Interaktif (`/quiz`)**: Tebak gerakan isyarat dari video dengan skor otomatis.
+* **Profil Pengguna (`/profile`)**: Info akun dan riwayat kuis.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+* **Frontend**: React 18 (Vite) + TypeScript
+* **Styling**: Tailwind CSS + Framer Motion + Lucide Icons
+* **Backend**: Supabase (PostgreSQL + Auth + RLS)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Cara Jalankan di Lokal
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1. Clone & Install
+```bash
+git clone [https://github.com/Zarrr-Dev/HandTalk-learn.git](https://github.com/Zarrr-Dev/HandTalk-learn.git)
+cd HandTalk-learn
+npm install
 
-```
+2. Setting .env
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Buat file .env di folder utama dan isi kunci Supabase kamu:
+Cuplikan kode
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+VITE_SUPABASE_URL=[https://xxxxxxxx.supabase.co]
+VITE_SUPABASE_ANON_KEY=...
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+3. Run Application
 
-```
+
+npm run dev

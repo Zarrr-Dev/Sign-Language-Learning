@@ -1,246 +1,259 @@
-import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
-import { Award, RotateCcw, CheckCircle2, XCircle, Trophy } from 'lucide-react'
-import { useAuth } from '../context/AuthContext'
-import { signService } from '../services/signService'
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { signService, type Sign } from '../services/signService'
 import { quizService } from '../services/quizService'
-import type { Sign } from '../services/signService'
-
-interface Question {
-  targetSign: Sign
-  options: string[]
-}
+import { useAuth } from '../context/AuthContext'
 
 export const QuizPage = () => {
   const { user } = useAuth()
+  const [signs, setSigns] = useState<Sign[]>([])
   const [loading, setLoading] = useState(true)
-  const [questions, setQuestions] = useState<Question[]>([])
+  
+  // State Permainan
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
+  const [options, setOptions] = useState<string[]>([])
+  const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [score, setScore] = useState(0)
-  const [quizFinished, setQuizFinished] = useState(false)
-  const [, setSaving] = useState(false)
+  const [isQuizFinished, setIsQuizFinished] = useState(false)
+  const [savingResult, setSavingResult] = useState(false)
 
   useEffect(() => {
-    initQuiz()
+    fetchQuizData()
   }, [])
 
-  const initQuiz = async () => {
+  const fetchQuizData = async () => {
     try {
       setLoading(true)
-      setQuizFinished(false)
-      setScore(0)
-      setCurrentIndex(0)
-      setSelectedAnswer(null)
-
-      const signs = await signService.getAllSigns()
-      if (signs.length < 3) return
-
-      // Acak data untuk dijadikan soal kuis
-      const shuffled = [...signs].sort(() => 0.5 - Math.random())
-      const selectedSigns = shuffled.slice(0, 5) // 5 soal
-
-      const generatedQuestions: Question[] = selectedSigns.map((targetSign) => {
-        const otherLabels = signs
-          .filter((s) => s.label !== targetSign.label)
-          .map((s) => s.label)
-          .sort(() => 0.5 - Math.random())
-          .slice(0, 3)
-
-        const options = [...otherLabels, targetSign.label].sort(() => 0.5 - Math.random())
-
-        return { targetSign, options }
-      })
-
-      setQuestions(generatedQuestions)
+      const data = await signService.getAllSigns()
+      // Acak urutan pertanyaan
+      const shuffled = [...data].sort(() => 0.5 - Math.random())
+      setSigns(shuffled)
+      if (shuffled.length > 0) {
+        generateOptions(shuffled[0], shuffled)
+      }
     } catch (err) {
-      console.error('Error initiating quiz:', err)
+      console.error('Error fetching quiz signs:', err)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleSelectOption = (option: string) => {
-    if (selectedAnswer !== null) return
-    setSelectedAnswer(option)
+  // Generate 4 Pilihan Jawaban Acak (1 Benar, 3 Salah)
+  const generateOptions = (currentSign: Sign, allSigns: Sign[]) => {
+    const wrongAnswers = allSigns
+      .filter((s) => s.id !== currentSign.id)
+      .map((s) => s.label)
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 3)
 
-    const isCorrect = option === questions[currentIndex].targetSign.label
-    if (isCorrect) {
-      setScore((prev) => prev + 1)
-    }
+    const choices = [currentSign.label, ...wrongAnswers].sort(() => 0.5 - Math.random())
+    setOptions(choices)
+    setSelectedOption(null)
   }
 
-  const handleNextQuestion = async () => {
-    if (currentIndex + 1 < questions.length) {
-      setCurrentIndex((prev) => prev + 1)
-      setSelectedAnswer(null)
-    } else {
-      setQuizFinished(true)
-      if (user) {
-        try {
-          setSaving(true)
-          await quizService.saveQuizAttempt(
-            user.id, 
-            score + (selectedAnswer === questions[currentIndex].targetSign.label ? 1 : 0), 
-            questions.length
-          )
-        } catch (err) {
-          console.error('Failed to save score:', err)
-        } finally {
-          setSaving(false)
-        }
+  const handleSelectOption = (option: string) => {
+    if (selectedOption !== null) return // Mencegah double klik
+    setSelectedOption(option)
+
+    const currentSign = signs[currentIndex]
+    let newScore = score
+    if (option === currentSign.label) {
+      newScore = score + 1
+      setScore(newScore)
+    }
+
+    // Delay 1 detik sebelum lanjut ke soal berikutnya
+    setTimeout(() => {
+      if (currentIndex + 1 < signs.length && currentIndex + 1 < 5) {
+        // Batasi 5 Pertanyaan per Sesi Kuis
+        const nextIdx = currentIndex + 1
+        setCurrentIndex(nextIdx)
+        generateOptions(signs[nextIdx], signs)
+      } else {
+        finishQuiz(newScore, Math.min(signs.length, 5))
+      }
+    }, 1000)
+  }
+
+  const finishQuiz = async (finalScore: number, totalQuestions: number) => {
+    setIsQuizFinished(true)
+    if (user) {
+      try {
+        setSavingResult(true)
+        await quizService.saveQuizAttempt(user.id, finalScore, totalQuestions)
+      } catch (err) {
+        console.error('Gagal menyimpan hasil kuis:', err)
+      } finally {
+        setSavingResult(false)
       }
     }
   }
 
+  const handleRestartQuiz = () => {
+    setCurrentIndex(0)
+    setScore(0)
+    setIsQuizFinished(false)
+    fetchQuizData()
+  }
+
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="text-center space-y-3">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-sm text-[#B5B5B5]">Menyiapkan kuis interaktif...</p>
-        </div>
+      <div className="max-w-xl mx-auto p-12 text-center">
+        <div className="w-12 h-12 bg-secondary-container border-2 border-primary rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-xs font-bold uppercase tracking-wider text-primary">Menyiapkan Kuis...</p>
       </div>
     )
   }
 
-  if (questions.length === 0) {
+  if (signs.length === 0) {
     return (
-      <div className="bg-[#171717] border border-white/10 rounded-[20px] p-8 text-center">
-        <p className="text-[#8A8A8A]">Materi belum cukup untuk memulai kuis. Tambahkan lebih banyak materi dahulu.</p>
+      <div className="max-w-xl mx-auto bg-surface border-2 border-primary rounded-2xl p-8 text-center shadow-hard">
+        <span className="material-symbols-outlined text-4xl text-primary mb-2">quiz</span>
+        <h2 className="font-headline text-xl font-bold text-primary mb-2">Materi Belum Cukup</h2>
+        <p className="text-xs text-on-surface-variant mb-6">Silakan tambahkan data isyarat terlebih dahulu di database Supabase.</p>
+        <Link
+          to="/dashboard/learn"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-secondary-container border-2 border-primary rounded-xl text-xs font-bold text-on-secondary-container shadow-hard-sm"
+        >
+          <span>Buka Modul Belajar</span>
+        </Link>
       </div>
     )
   }
 
-  const currentQuestion = questions[currentIndex]
+  const currentSign = signs[currentIndex]
+  const totalQuestions = Math.min(signs.length, 5)
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-            Kuis & Evaluasi Isyarat <Award className="w-6 h-6 text-purple-400" />
-          </h1>
-          <p className="text-sm text-[#B5B5B5] mt-1">Uji pemahaman kamu tentang gerakan bahasa isyarat.</p>
-        </div>
+    <div className="max-w-xl mx-auto space-y-6 pb-16">
+      
+      {/* TAMPILAN 1: KUIS AKTIF */}
+      {!isQuizFinished ? (
+        <div className="bg-surface-container-low border-2 border-primary rounded-2xl p-6 shadow-hard relative">
+          {/* Tape Decor */}
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-secondary-container/80 border border-primary/30 -rotate-1" />
 
-        {!quizFinished && (
-          <div className="px-4 py-2 rounded-xl bg-[#171717] border border-white/10 text-xs font-semibold text-blue-400">
-            Soal {currentIndex + 1} dari {questions.length}
-          </div>
-        )}
-      </div>
-
-      {/* Tampilan Hasil Kuis */}
-      {quizFinished ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-[#171717] border border-white/10 rounded-[24px] p-8 text-center space-y-6 shadow-2xl"
-        >
-          <div className="w-16 h-16 bg-purple-500/10 rounded-full border border-purple-500/20 text-purple-400 flex items-center justify-center mx-auto">
-            <Trophy className="w-8 h-8" />
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-bold text-white">Kuis Selesai! 🎉</h2>
-            <p className="text-sm text-[#B5B5B5] mt-1">
-              Kamu berhasil menjawab <span className="text-white font-semibold">{score}</span> dari{' '}
-              <span className="text-white font-semibold">{questions.length}</span> soal dengan benar.
-            </p>
-          </div>
-
-          <div className="p-6 bg-[#0F0F0F] rounded-2xl border border-white/5 max-w-xs mx-auto">
-            <span className="text-xs font-semibold text-[#8A8A8A] uppercase tracking-wider block mb-1">
-              Skor Akhir
+          {/* Header Progress */}
+          <div className="flex items-center justify-between mb-4 pt-2">
+            <span className="text-xs font-bold text-primary uppercase tracking-wider">
+              Soal {currentIndex + 1} dari {totalQuestions}
             </span>
-            <span className="text-4xl font-extrabold text-purple-400">
-              {Math.round((score / questions.length) * 100)}%
-            </span>
-          </div>
-
-          <button
-            onClick={initQuiz}
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-3 rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-95 text-sm"
-          >
-            <RotateCcw className="w-4 h-4" />
-            Coba Kuis Lagi
-          </button>
-        </motion.div>
-      ) : (
-        /* Soal Active Card */
-        <motion.div
-          key={currentIndex}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-[#171717] border border-white/10 rounded-[24px] p-6 md:p-8 space-y-6 shadow-2xl"
-        >
-          {/* Video Pertanyaan */}
-          <div className="space-y-2">
-            <span className="text-xs font-semibold text-blue-400 uppercase tracking-wider">
-              Pertanyaan:
-            </span>
-            <h3 className="text-lg font-semibold text-white">
-              Isyarat apakah yang ditunjukkan pada video di bawah ini?
-            </h3>
-
-            <div className="relative aspect-video bg-[#000000] rounded-2xl overflow-hidden border border-white/10 mt-3">
-              <video
-                src={currentQuestion.targetSign.video_url}
-                controls
-                autoPlay
-                loop
-                className="w-full h-full object-cover"
-              />
+            <div className="px-3 py-1 bg-surface border border-primary rounded-full text-xs font-bold text-tertiary shadow-hard-sm flex items-center gap-1">
+              <span className="material-symbols-outlined text-sm text-tertiary">star</span>
+              <span>Skor: {score}</span>
             </div>
           </div>
 
-          {/* Pilihan Jawaban */}
-          <div className="grid grid-cols-2 gap-3 pt-2">
-            {currentQuestion.options.map((option, idx) => {
-              const isSelected = selectedAnswer === option
-              const isCorrect = option === currentQuestion.targetSign.label
-              const showResult = selectedAnswer !== null
+          {/* Progress Bar */}
+          <div className="w-full bg-surface border border-primary/30 h-2.5 rounded-full overflow-hidden mb-6 p-0.5">
+            <div
+              className="bg-secondary-container h-full rounded-full transition-all duration-300"
+              style={{ width: `${((currentIndex + 1) / totalQuestions) * 100}%` }}
+            />
+          </div>
 
-              let btnStyle = 'bg-[#0F0F0F] border-white/10 hover:border-blue-500/40 text-white'
+          {/* Prompt Title */}
+          <div className="text-center mb-4">
+            <h2 className="font-headline text-xl font-bold text-primary">Tebak Gerakan Isyarat Ini!</h2>
+            <p className="text-xs text-on-surface-variant">Perhatikan video di bawah, lalu pilih huruf yang sesuai.</p>
+          </div>
 
-              if (showResult) {
+          {/* Video Player Box */}
+          <div className="aspect-video bg-on-surface/90 border-2 border-primary rounded-xl overflow-hidden shadow-hard mb-6 relative">
+            <video
+              src={currentSign.video_url}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          {/* 4 Pilihan Jawaban */}
+          <div className="grid grid-cols-2 gap-3">
+            {options.map((option, idx) => {
+              const isSelected = selectedOption === option
+              const isCorrect = option === currentSign.label
+
+              let btnStyle = 'bg-surface text-primary border-primary hover:bg-surface-container-low shadow-hard'
+              if (selectedOption !== null) {
                 if (isCorrect) {
-                  btnStyle = 'bg-green-500/10 border-green-500/50 text-green-400 font-semibold'
+                  btnStyle = 'bg-secondary-container text-on-secondary-container border-primary shadow-hard-sm'
                 } else if (isSelected) {
-                  btnStyle = 'bg-red-500/10 border-red-500/50 text-red-400'
+                  btnStyle = 'bg-tertiary-container/30 text-tertiary border-tertiary shadow-none'
                 }
               }
 
               return (
                 <button
                   key={idx}
-                  disabled={selectedAnswer !== null}
                   onClick={() => handleSelectOption(option)}
-                  className={`p-4 rounded-xl border text-center transition-all duration-200 text-sm flex items-center justify-between ${btnStyle}`}
+                  disabled={selectedOption !== null}
+                  className={`p-4 rounded-xl border-2 font-headline text-2xl font-bold uppercase transition-all duration-200 ${btnStyle}`}
                 >
-                  <span>{option}</span>
-                  {showResult && isCorrect && <CheckCircle2 className="w-4 h-4 text-green-400" />}
-                  {showResult && isSelected && !isCorrect && <XCircle className="w-4 h-4 text-red-400" />}
+                  {option}
                 </button>
               )
             })}
           </div>
+        </div>
+      ) : (
+        
+        /* TAMPILAN 2: HASIL KUIS (RECAP) */
+        <div className="bg-surface-container-low border-2 border-primary rounded-2xl p-8 text-center shadow-hard relative">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-secondary-container/80 border border-primary/30 rotate-1" />
 
-          {/* Tombol Selanjutnya */}
-          {selectedAnswer !== null && (
-            <div className="pt-4 flex justify-end">
-              <button
-                onClick={handleNextQuestion}
-                className="bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-2.5 rounded-xl text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-95"
-              >
-                {currentIndex + 1 === questions.length ? 'Lihat Hasil Kuis' : 'Soal Berikutnya'}
-              </button>
+          {/* Icon Trophy / Stars */}
+          <div className="w-20 h-20 bg-secondary-container border-2 border-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-hard">
+            <span className="material-symbols-outlined text-4xl text-primary">emoji_events</span>
+          </div>
+
+          <h2 className="font-headline text-3xl font-bold text-primary mb-1">
+            {score === totalQuestions ? 'Sempurna!' : score > 2 ? 'Bagus Sekali!' : 'Tetap Semangat!'}
+          </h2>
+          <p className="text-xs text-on-surface-variant mb-6">
+            Kamu telah menyelesaikan sesi latihan tebak isyarat.
+          </p>
+
+          {/* Score Box */}
+          <div className="bg-surface border-2 border-primary rounded-2xl p-6 shadow-hard mb-6 max-w-xs mx-auto">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant block mb-1">
+              Skor Akhir Kamu
+            </span>
+            <div className="font-headline text-5xl font-extrabold text-primary mb-1">
+              {score} <span className="text-2xl text-on-surface-variant">/ {totalQuestions}</span>
             </div>
+            <span className="inline-block px-3 py-1 bg-secondary-container border border-primary rounded-full text-xs font-bold text-on-secondary-container">
+              Akurasi {Math.round((score / totalQuestions) * 100)}%
+            </span>
+          </div>
+
+          {savingResult && (
+            <p className="text-[11px] text-on-surface-variant mb-4 italic">Menyimpan skor ke database...</p>
           )}
-        </motion.div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={handleRestartQuiz}
+              className="flex-1 bg-surface text-primary border-2 border-primary font-bold text-xs uppercase tracking-wider py-3.5 px-5 rounded-xl shadow-hard hover:shadow-hard-lg active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-base">refresh</span>
+              <span>Coba Lagi</span>
+            </button>
+
+            <Link
+              to="/dashboard"
+              className="flex-1 bg-secondary-container text-on-secondary-container border-2 border-primary font-bold text-xs uppercase tracking-wider py-3.5 px-5 rounded-xl shadow-hard hover:shadow-hard-lg active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2 text-center"
+            >
+              <span>Kembali ke Dashboard</span>
+              <span className="material-symbols-outlined text-base">arrow_forward</span>
+            </Link>
+          </div>
+        </div>
       )}
+
     </div>
   )
 }
