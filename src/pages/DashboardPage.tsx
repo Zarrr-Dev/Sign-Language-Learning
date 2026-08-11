@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { quizService } from '../services/quizService'
+import { quizService, type QuizAttempt } from '../services/quizService'
 import { signService } from '../services/signService'
-import type { QuizAttempt } from '../services/quizService'
+import { userService } from '../services/userService'
 
 export const DashboardPage = () => {
   const { user } = useAuth()
   const [history, setHistory] = useState<QuizAttempt[]>([])
   const [totalSigns, setTotalSigns] = useState(0)
   const [loading, setLoading] = useState(true)
+
+  // State Dinamis untuk Streak
+  const [streakCount, setStreakCount] = useState<number>(0)
+  const [isStreakActiveToday, setIsStreakActiveToday] = useState<boolean>(false)
 
   useEffect(() => {
     if (user) {
@@ -22,19 +26,23 @@ export const DashboardPage = () => {
   const loadData = async () => {
     try {
       setLoading(true)
-      const [quizHistory, signs] = await Promise.all([
-        quizService.getUserQuizHistory(user!.id).catch((err) => {
-          console.warn('Gagal memuat history kuis:', err)
-          return [] as QuizAttempt[]
-        }),
-        signService.getAllSigns().catch((err) => {
-          console.warn('Gagal memuat daftar isyarat:', err)
-          return []
-        })
+      const [quizHistory, signs, profile] = await Promise.all([
+        quizService.getUserQuizHistory(user!.id).catch(() => [] as QuizAttempt[]),
+        signService.getAllSigns().catch(() => []),
+        userService.getUserProfile(user!.id).catch(() => null)
       ])
 
       setHistory(quizHistory || [])
       setTotalSigns(signs ? signs.length : 0)
+
+      // Cek Status Streak Realtime
+      if (profile) {
+        const today = new Date().toISOString().split('T')[0]
+        setStreakCount(profile.streak_count || 0)
+        
+        // Aktif jika aktivitas terakhir dilakukan HARI INI
+        setIsStreakActiveToday(profile.last_activity_date === today)
+      }
     } catch (err) {
       console.error('Error loading dashboard data:', err)
     } finally {
@@ -42,160 +50,147 @@ export const DashboardPage = () => {
     }
   }
 
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Pelajar'
+
   return (
-    <div className="space-y-6 max-w-4xl mx-auto pb-16">
+    <div className="space-y-6 max-w-2xl mx-auto pb-6 text-[#1e1b14] select-none">
       
-      {/* Banner Sapaan */}
-      <div className="bg-surface-container-low border-2 border-primary rounded-2xl p-6 md:p-8 shadow-hard relative overflow-hidden">
-        <div className="absolute -top-3 left-8 w-20 h-6 bg-secondary-container/60 border border-primary/30 -rotate-2" />
+      {/* Greeting & Streak Section */}
+      <section className="flex justify-between items-end relative pt-2">
+        <div>
+          <h1 className="font-serif text-2xl font-bold text-[#1e1b14]">
+            Halo, <span className="marker-highlight font-bold">{userName}!</span>
+          </h1>
+          <p className="text-xs text-[#6f797a] mt-1">Siap untuk belajar hari ini?</p>
+        </div>
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+        {/* Dynamic Streak Badge (Abu-abu vs Nyala) */}
+        <div 
+          className={`flex flex-col items-center border-2 border-[#004349] px-3 py-1.5 rounded-xl rotate-2 shadow-[2px_2px_0px_0px_#004349] transition-all duration-300 ${
+            isStreakActiveToday 
+              ? 'bg-[#ffbe4f]' // Nyala Khas Kuning-Emas
+              : 'bg-[#e2e8f0]' // Abu-abu Mati (Belum Belajar)
+          }`}
+        >
+          <span className={`material-symbols-outlined text-2xl transition-colors ${
+            isStreakActiveToday ? 'text-[#741a06]' : 'text-[#94a3b8]'
+          }`}>
+            local_fire_department
+          </span>
+          <span className={`text-[10px] font-extrabold mt-0.5 ${
+            isStreakActiveToday ? 'text-[#724d00]' : 'text-[#64748b]'
+          }`}>
+            {streakCount} Hari
+          </span>
+        </div>
+      </section>
+
+      {/* Continue Learning / Modul Pilihan Card */}
+      <section className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-5 shadow-[4px_4px_0px_0px_#004349] relative overflow-hidden">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="material-symbols-outlined text-[#741a06]">menu_book</span>
+          <h2 className="text-xs font-bold text-[#004349] uppercase tracking-wider">Lanjut Belajar</h2>
+        </div>
+        
+        <h3 className="font-serif text-lg font-bold text-[#1e1b14] mb-3">Alfabet & Kata Isyarat</h3>
+        
+        <div className="flex items-center justify-between text-[11px] text-[#6f797a] mb-1">
+          <span>Materi Tersedia</span>
+          <span className="font-bold text-[#004349]">{totalSigns} Isyarat</span>
+        </div>
+
+        {/* Progress Bar Dynamic */}
+        <div className="h-3 w-full bg-[#f4ede0] border border-[#004349] rounded-full overflow-hidden p-0.5 mb-4">
+          <div 
+            className="h-full bg-[#741a06] rounded-full transition-all duration-500" 
+            style={{ width: `${totalSigns > 0 ? Math.min(100, (history.length / totalSigns) * 100) : 0}%` }}
+          />
+        </div>
+
+        <Link
+          to="/dashboard/learn"
+          className="block w-full bg-[#ffbe4f] text-[#724d00] font-bold text-xs uppercase tracking-wider py-3 rounded-xl border-2 border-[#004349] shadow-[2px_2px_0px_0px_#004349] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all text-center"
+        >
+          Lanjutkan
+        </Link>
+      </section>
+
+      {/* Quick Action Modules */}
+      <section className="grid grid-cols-2 gap-3">
+        {/* Card 1: Belajar */}
+        <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-4 shadow-[4px_4px_0px_0px_#004349] flex flex-col justify-between">
           <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container border border-primary text-[11px] font-bold text-on-secondary-container shadow-hard-sm mb-2">
-              <span className="material-symbols-outlined text-sm">edit_note</span>
-              Jurnal Belajar
-            </span>
-            <h1 className="font-headline text-2xl md:text-3xl font-bold text-primary">
-              Halo, {user?.user_metadata?.full_name || 'Pelajar Isyarat'}! 👋
-            </h1>
-            <p className="text-xs md:text-sm text-on-surface-variant mt-1 max-w-md">
-              Mari tingkatkan kemampuan bahasa isyarat kamu hari ini. Pilih modul atau uji kemampuan lewat kuis!
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 self-start md:self-auto">
-            <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-tertiary-container/20 border-2 border-tertiary text-tertiary text-xs font-bold shadow-hard-sm">
-              <span className="material-symbols-outlined text-base fill-1 text-tertiary">local_fire_department</span>
-              <span>3 Hari Streak</span>
+            <div className="w-10 h-10 rounded-xl bg-[#f4ede0] border border-[#004349] flex items-center justify-center mb-3 text-[#004349]">
+              <span className="material-symbols-outlined text-2xl">auto_stories</span>
             </div>
+            <h4 className="font-serif text-base font-bold text-[#004349] mb-1">Modul Belajar</h4>
+            <p className="text-[11px] text-[#3f484a]">Lihat katalog video gerakan isyarat.</p>
           </div>
-        </div>
-      </div>
-
-      {/* Grid Statistik Ringkas */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-surface border-2 border-primary rounded-xl p-5 shadow-hard flex items-center justify-between">
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant block mb-1">
-              Materi Tersedia
-            </span>
-            <span className="font-headline text-3xl font-bold text-primary">{totalSigns}</span>
-            <span className="text-[11px] text-on-surface-variant block mt-0.5">Isyarat ISINDO/SIBI</span>
-          </div>
-          <div className="w-12 h-12 bg-secondary-container border-2 border-primary rounded-xl flex items-center justify-center text-primary shadow-hard-sm">
-            <span className="material-symbols-outlined text-2xl">auto_stories</span>
-          </div>
-        </div>
-
-        <div className="bg-surface border-2 border-primary rounded-xl p-5 shadow-hard flex items-center justify-between">
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant block mb-1">
-              Kuis Selesai
-            </span>
-            <span className="font-headline text-3xl font-bold text-primary">{history.length}</span>
-            <span className="text-[11px] text-on-surface-variant block mt-0.5">Kali Percobaan</span>
-          </div>
-          <div className="w-12 h-12 bg-secondary-container border-2 border-primary rounded-xl flex items-center justify-center text-primary shadow-hard-sm">
-            <span className="material-symbols-outlined text-2xl">quiz</span>
-          </div>
-        </div>
-
-        <div className="bg-surface border-2 border-primary rounded-xl p-5 shadow-hard flex items-center justify-between">
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant block mb-1">
-              Target Harian
-            </span>
-            <span className="font-headline text-3xl font-bold text-primary">100%</span>
-            <span className="text-[11px] text-on-surface-variant block mt-0.5">Tercapai Hari Ini</span>
-          </div>
-          <div className="w-12 h-12 bg-secondary-container border-2 border-primary rounded-xl flex items-center justify-center text-primary shadow-hard-sm">
-            <span className="material-symbols-outlined text-2xl">verified</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Akses Cepat Modul */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div className="bg-surface-container-low border-2 border-primary rounded-2xl p-6 shadow-hard flex flex-col justify-between hover:shadow-hard-lg transition-all">
-          <div>
-            <div className="w-10 h-10 bg-secondary-container border-2 border-primary rounded-xl flex items-center justify-center text-primary shadow-hard-sm mb-4">
-              <span className="material-symbols-outlined text-xl">menu_book</span>
-            </div>
-            <h3 className="font-headline text-xl font-bold text-primary mb-1">Modul Pembelajaran</h3>
-            <p className="text-xs text-on-surface-variant leading-relaxed">
-              Pelajari abjad dan kata isyarat dengan panduan video instruksional yang jelas.
-            </p>
-          </div>
-
-          <Link
-            to="/dashboard/learn"
-            className="mt-6 inline-flex items-center justify-center gap-2 bg-secondary-container text-on-secondary-container font-bold text-xs uppercase tracking-wider py-3 px-5 rounded-xl border-2 border-primary shadow-hard-sm hover:shadow-hard active:translate-y-1 active:shadow-none transition-all text-center"
+          <Link 
+            to="/dashboard/learn" 
+            className="mt-4 text-[11px] font-bold text-[#004349] underline flex items-center gap-1"
           >
-            <span>Buka Modul Belajar</span>
-            <span className="material-symbols-outlined text-base">arrow_forward</span>
+            <span>Buka</span>
+            <span className="material-symbols-outlined text-sm">arrow_forward</span>
           </Link>
         </div>
 
-        <div className="bg-surface-container-low border-2 border-primary rounded-2xl p-6 shadow-hard flex flex-col justify-between hover:shadow-hard-lg transition-all">
+        {/* Card 2: Kuis */}
+        <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-4 shadow-[4px_4px_0px_0px_#004349] flex flex-col justify-between">
           <div>
-            <div className="w-10 h-10 bg-secondary-container border-2 border-primary rounded-xl flex items-center justify-center text-primary shadow-hard-sm mb-4">
-              <span className="material-symbols-outlined text-xl">psychology</span>
+            <div className="w-10 h-10 rounded-xl bg-[#f4ede0] border border-[#004349] flex items-center justify-center mb-3 text-[#004349]">
+              <span className="material-symbols-outlined text-2xl">quiz</span>
             </div>
-            <h3 className="font-headline text-xl font-bold text-primary mb-1">Latihan & Kuis</h3>
-            <p className="text-xs text-on-surface-variant leading-relaxed">
-              Uji ketepatan dan ingatan gerakan tanganmu lewat kuis tebak isyarat interaktif.
-            </p>
+            <h4 className="font-serif text-base font-bold text-[#004349] mb-1">Latihan Kuis</h4>
+            <p className="text-[11px] text-[#3f484a]">Uji ingatan gerakan isyarat kamu.</p>
           </div>
-
-          <Link
-            to="/dashboard/quiz"
-            className="mt-6 inline-flex items-center justify-center gap-2 bg-surface border-2 border-primary text-primary font-bold text-xs uppercase tracking-wider py-3 px-5 rounded-xl shadow-hard-sm hover:shadow-hard active:translate-y-1 active:shadow-none transition-all text-center"
+          <Link 
+            to="/dashboard/quiz" 
+            className="mt-4 text-[11px] font-bold text-[#004349] underline flex items-center gap-1"
           >
-            <span>Mulai Kuis</span>
-            <span className="material-symbols-outlined text-base">arrow_forward</span>
+            <span>Mulai</span>
+            <span className="material-symbols-outlined text-sm">arrow_forward</span>
           </Link>
         </div>
-      </div>
+      </section>
 
-      {/* Tabel Riwayat Kuis Terakhir */}
-      <div className="bg-surface border-2 border-primary rounded-2xl p-6 shadow-hard space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="font-headline text-lg font-bold text-primary flex items-center gap-2">
-            <span className="material-symbols-outlined text-xl">history</span>
-            Riwayat Kuis Terakhir
+      {/* Riwayat Kuis */}
+      <section className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-5 shadow-[4px_4px_0px_0px_#004349] space-y-3">
+        <div className="flex items-center justify-between border-b border-[#004349]/20 pb-2">
+          <h3 className="font-serif text-base font-bold text-[#004349] flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-lg">history</span>
+            Riwayat Terakhir
           </h3>
-          <Link to="/dashboard/profile" className="text-xs font-bold text-primary underline">
+          <Link to="/dashboard/profile" className="text-[11px] font-bold text-[#004349] underline">
             Lihat Semua
           </Link>
         </div>
 
         {loading ? (
-          <p className="text-xs text-on-surface-variant">Memuat data riwayat...</p>
+          <p className="text-xs text-[#3f484a] py-2 text-center">Memuat riwayat...</p>
         ) : history.length === 0 ? (
-          <div className="p-6 text-center bg-surface-container-low border border-primary/20 rounded-xl">
-            <p className="text-xs text-on-surface-variant">Belum ada riwayat kuis. Yuk coba ikuti kuis pertamamu!</p>
-          </div>
+          <p className="text-xs text-[#3f484a] py-2 text-center">Belum ada riwayat kuis. Yuk ikuti kuis pertamamu!</p>
         ) : (
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             {history.slice(0, 3).map((item, idx) => (
               <div
                 key={item.id || idx}
-                className="flex items-center justify-between p-3.5 bg-surface-container-low border border-primary/30 rounded-xl text-xs"
+                className="flex items-center justify-between p-3 bg-[#faf3e6] border border-[#004349] rounded-xl text-xs"
               >
                 <div>
-                  <span className="font-bold text-primary block">Kuis Tebak Isyarat</span>
-                  <span className="text-[10px] text-on-surface-variant">
+                  <span className="font-bold text-[#004349] block">Kuis Tebak Isyarat</span>
+                  <span className="text-[10px] text-[#3f484a]">
                     {item.completed_at ? new Date(item.completed_at).toLocaleDateString('id-ID') : 'Baru saja'}
                   </span>
                 </div>
-                <div className="px-3 py-1 bg-secondary-container border border-primary rounded-lg font-bold text-on-secondary-container shadow-hard-sm">
-                  {item.score} / {item.total_questions} Benar ({Math.round((item.score / item.total_questions) * 100)}%)
+                <div className="px-2.5 py-1 bg-[#ffbe4f] border border-[#004349] rounded-lg font-bold text-[#724d00]">
+                  {item.score} / {item.total_questions} Benar
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </section>
 
     </div>
   )

@@ -2,14 +2,34 @@ import { supabase } from '../lib/supabase'
 
 export const authService = {
   async register(email: string, pass: string, fullName: string) {
+    // 1. Sign Up User ke Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email,
       password: pass,
       options: {
-        data: { full_name: fullName }
+        data: {
+          full_name: fullName
+        }
       }
     })
+
     if (error) throw error
+
+    // 2. Jika user berhasil dibuat, pastikan profile terisi di database
+    if (data.user) {
+      const { error: profileError } = await supabase.from('profiles').upsert([
+        {
+          id: data.user.id,
+          full_name: fullName,
+          email: email
+        }
+      ])
+
+      if (profileError) {
+        console.warn('Gagal membuat profile manual (mungkin sudah dibuat via trigger):', profileError.message)
+      }
+    }
+
     return data
   },
 
@@ -18,6 +38,7 @@ export const authService = {
       email,
       password: pass
     })
+
     if (error) throw error
     return data
   },
@@ -25,15 +46,5 @@ export const authService = {
   async logout() {
     const { error } = await supabase.auth.signOut()
     if (error) throw error
-  },
-
-  async getProfile(userId: string) {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
-    if (error) throw error
-    return data
   }
 }

@@ -8,67 +8,46 @@ export const RegisterPage = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setErrorMsg(null)
     setLoading(true)
-
     try {
       await authService.register(email, password, fullName)
       navigate('/dashboard')
     } catch (err: any) {
-      setErrorMsg(err.message || 'Pendaftaran gagal. Pastikan email belum pernah terdaftar.')
+      alert(err.message || 'Pendaftaran gagal.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-surface text-on-surface font-body flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      
-      {/* Top Bar */}
-      <div className="w-full max-w-md mb-6 flex justify-between items-center">
-        <Link 
-          to="/" 
-          className="inline-flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider text-primary hover:underline"
-        >
-          <span className="material-symbols-outlined text-lg">arrow_back</span>
-          <span>Kembali</span>
+    <div className="bg-[#fff9ee] text-[#1e1b14] dot-grid min-h-screen flex flex-col justify-center items-center px-4 py-8 relative">
+      {/* Top bar */}
+      <div className="w-full max-w-sm mb-4 flex justify-between items-center">
+        <Link to="/" className="inline-flex items-center gap-1 font-bold text-xs uppercase text-[#004349]">
+          <span className="material-symbols-outlined text-base">arrow_back</span>
+          Kembali
         </Link>
-        <span className="px-3 py-1 bg-surface-container border border-primary/30 rounded-full text-[11px] font-bold text-primary">
+        <span className="px-3 py-1 bg-[#f4ede0] border border-[#004349]/30 rounded-full text-[10px] font-bold text-[#004349]">
           Akun Baru
         </span>
       </div>
 
-      {/* Workbook Card */}
-      <main className="w-full max-w-md bg-surface-container-low border-2 border-primary rounded-2xl shadow-hard-lg p-6 md:p-8 relative">
-        
-        {/* Decorative Paper Tape */}
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-secondary-container/60 border border-primary/30 rotate-1" />
-
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-secondary-container border-2 border-primary rounded-full flex items-center justify-center mx-auto mb-3 shadow-hard-sm">
-            <span className="material-symbols-outlined text-primary text-2xl">edit_note</span>
+      {/* Card Form Register */}
+      <main className="w-full max-w-sm bg-[#faf3e6] border-2 border-[#004349] rounded-2xl p-6 shadow-[6px_6px_0px_0px_#004349] relative z-10">
+        <div className="text-center mb-6">
+          <div className="w-12 h-12 bg-[#ffbe4f] border-2 border-[#004349] rounded-full flex items-center justify-center mx-auto mb-3 shadow-[2px_2px_0px_0px_#004349]">
+            <span className="material-symbols-outlined text-[#004349] text-2xl">edit_note</span>
           </div>
-          <h1 className="font-headline text-3xl font-bold text-primary">Daftar Akun</h1>
-          <p className="text-xs text-on-surface-variant mt-1">Mulai perjalanan belajar bahasa isyarat kamu hari ini</p>
+          <h1 className="font-serif text-2xl font-bold text-[#004349]">Daftar Akun</h1>
+          <p className="text-xs text-[#3f484a] mt-1">Mulai perjalanan belajar bahasa isyarat kamu hari ini</p>
         </div>
 
-        {/* Error Alert */}
-        {errorMsg && (
-          <div className="mb-6 p-3.5 bg-tertiary-container/20 border-2 border-tertiary rounded-xl text-xs text-tertiary font-medium flex items-center gap-2">
-            <span className="material-symbols-outlined text-base">error</span>
-            <span>{errorMsg}</span>
-          </div>
-        )}
-
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-primary mb-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#004349] mb-1.5">
               Nama Lengkap
             </label>
             <input
@@ -77,12 +56,12 @@ export const RegisterPage = () => {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Siti Rahma"
-              className="w-full bg-surface border-2 border-primary rounded-xl px-4 py-3 text-sm text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary shadow-hard-sm transition-all"
+              className="w-full bg-[#fff9ee] border-2 border-[#004349] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#004349]"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-primary mb-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#004349] mb-1.5">
               Alamat Email
             </label>
             <input
@@ -91,12 +70,12 @@ export const RegisterPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="nama@email.com"
-              className="w-full bg-surface border-2 border-primary rounded-xl px-4 py-3 text-sm text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary shadow-hard-sm transition-all"
+              className="w-full bg-[#fff9ee] border-2 border-[#004349] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#004349]"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-primary mb-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#004349] mb-1.5">
               Kata Sandi
             </label>
             <input
@@ -105,34 +84,25 @@ export const RegisterPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Minimal 6 karakter"
-              className="w-full bg-surface border-2 border-primary rounded-xl px-4 py-3 text-sm text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary shadow-hard-sm transition-all"
+              className="w-full bg-[#fff9ee] border-2 border-[#004349] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#004349]"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-secondary-container text-on-secondary-container font-body font-bold text-sm uppercase tracking-wider py-4 px-6 rounded-xl border-2 border-primary shadow-hard hover:shadow-hard-lg hover:-translate-y-0.5 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2 mt-6 disabled:opacity-50"
+            className="w-full bg-[#ffbe4f] text-[#724d00] font-bold text-xs uppercase tracking-wider py-3.5 px-4 rounded-xl border-2 border-[#004349] shadow-[4px_4px_0px_0px_#004349] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2 mt-6"
           >
-            {loading ? (
-              <span>Mendaftarkan...</span>
-            ) : (
-              <>
-                <span>Daftar Sekarang</span>
-                <span className="material-symbols-outlined text-xl">person_add</span>
-              </>
-            )}
+            <span>{loading ? 'Mendaftarkan...' : 'Daftar Sekarang'}</span>
+            <span className="material-symbols-outlined text-base">arrow_forward</span>
           </button>
         </form>
 
-        {/* Footer Link */}
-        <div className="mt-8 text-center border-t border-primary/10 pt-6">
-          <p className="text-xs text-on-surface-variant">
-            Sudah punya akun?{' '}
-            <Link to="/login" className="font-bold text-primary underline underline-offset-2">
-              Masuk ke akun
-            </Link>
-          </p>
+        <div className="mt-6 text-center border-t border-[#004349]/10 pt-4 text-xs text-[#3f484a]">
+          Sudah punya akun?{' '}
+          <Link to="/login" className="font-bold text-[#004349] underline">
+            Masuk di sini
+          </Link>
         </div>
       </main>
     </div>

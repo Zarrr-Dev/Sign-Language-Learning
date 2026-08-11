@@ -5,18 +5,27 @@ export interface Sign {
   label: string
   category: string
   video_url: string
-  description: string
-  created_at: string
+  description?: string
+  created_at?: string
 }
 
 export const signService = {
-  async getAllSigns() {
-    const { data, error } = await supabase
-      .from('signs')
-      .select('*')
-      .order('label', { ascending: true })
+  async getAllSigns(): Promise<Sign[]> {
+    try {
+      const { data, error } = await supabase
+        .from('signs')
+        .select('*')
+        .order('label', { ascending: true })
 
-    if (error) throw error
-    return data as Sign[]
+      if (error) {
+        console.error('Error fetching signs:', error.message)
+        return []
+      }
+
+      return (data as Sign[]) || []
+    } catch (err) {
+      console.error('Unexpected signService error:', err)
+      return []
+    }
   }
 }

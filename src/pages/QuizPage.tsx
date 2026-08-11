@@ -1,259 +1,294 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { signService, type Sign } from '../services/signService'
-import { quizService } from '../services/quizService'
 import { useAuth } from '../context/AuthContext'
+import { quizService } from '../services/quizService'
+import { QUIZ_QUESTIONS, type QuizQuestion } from '../data/quizData'
+import { 
+  Type, Binary, Layers, HelpCircle, CheckCircle, ArrowLeft, 
+  Trophy, Flame, Check, X, RotateCcw, LayoutDashboard 
+} from 'lucide-react'
 
 export const QuizPage = () => {
   const { user } = useAuth()
-  const [signs, setSigns] = useState<Sign[]>([])
-  const [loading, setLoading] = useState(true)
-  
-  // State Permainan
+
+  // Config & State Flow
+  const [quizStarted, setQuizStarted] = useState(false)
+  const [category, setCategory] = useState<string>('Semua')
+  const [questionCount, setQuestionCount] = useState<number>(5)
+  const [signs, setSigns] = useState<QuizQuestion[]>([])
+
+  // Gameplay State
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [options, setOptions] = useState<string[]>([])
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [score, setScore] = useState(0)
   const [isQuizFinished, setIsQuizFinished] = useState(false)
-  const [savingResult, setSavingResult] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
-  useEffect(() => {
-    fetchQuizData()
-  }, [])
+  // Mulai Kuis Berdasarkan Kategori & Jumlah Soal Pilihan
+  const startQuiz = (cat: string) => {
+    const filtered = cat === 'Semua' 
+      ? [...QUIZ_QUESTIONS] 
+      : QUIZ_QUESTIONS.filter(q => q.category === cat)
 
-  const fetchQuizData = async () => {
-    try {
-      setLoading(true)
-      const data = await signService.getAllSigns()
-      // Acak urutan pertanyaan
-      const shuffled = [...data].sort(() => 0.5 - Math.random())
-      setSigns(shuffled)
-      if (shuffled.length > 0) {
-        generateOptions(shuffled[0], shuffled)
-      }
-    } catch (err) {
-      console.error('Error fetching quiz signs:', err)
-    } finally {
-      setLoading(false)
+    if (filtered.length === 0) {
+      alert('Belum ada soal untuk kategori ini!')
+      return
     }
-  }
 
-  // Generate 4 Pilihan Jawaban Acak (1 Benar, 3 Salah)
-  const generateOptions = (currentSign: Sign, allSigns: Sign[]) => {
-    const wrongAnswers = allSigns
-      .filter((s) => s.id !== currentSign.id)
-      .map((s) => s.label)
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 3)
+    // FIX: Loop/gandakan soal jika target questionCount (5/10) lebih banyak dari data asli
+    let pool: QuizQuestion[] = []
+    while (pool.length < questionCount) {
+      const shuffledCopy = [...filtered]
+        .sort(() => 0.5 - Math.random())
+        .map(q => ({
+          ...q,
+          // Acak juga pilihan jawabannya biar ga bosan
+          options: [...q.options].sort(() => 0.5 - Math.random())
+        }))
+      pool = [...pool, ...shuffledCopy]
+    }
 
-    const choices = [currentSign.label, ...wrongAnswers].sort(() => 0.5 - Math.random())
-    setOptions(choices)
+    // Potong tepat sesuai questionCount yang dipilih (5 atau 10)
+    const finalQuestions = pool.slice(0, questionCount)
+
+    setSigns(finalQuestions)
+    setCategory(cat)
+    setQuizStarted(true)
+    setCurrentIndex(0)
+    setScore(0)
     setSelectedOption(null)
   }
 
   const handleSelectOption = (option: string) => {
-    if (selectedOption !== null) return // Mencegah double klik
+    if (selectedOption !== null) return
     setSelectedOption(option)
 
     const currentSign = signs[currentIndex]
-    let newScore = score
-    if (option === currentSign.label) {
-      newScore = score + 1
-      setScore(newScore)
-    }
+    const isCorrect = option === currentSign.correctAnswer
+    const newScore = isCorrect ? score + 1 : score
+    if (isCorrect) setScore(newScore)
 
-    // Delay 1 detik sebelum lanjut ke soal berikutnya
     setTimeout(() => {
-      if (currentIndex + 1 < signs.length && currentIndex + 1 < 5) {
-        // Batasi 5 Pertanyaan per Sesi Kuis
-        const nextIdx = currentIndex + 1
-        setCurrentIndex(nextIdx)
-        generateOptions(signs[nextIdx], signs)
+      if (currentIndex + 1 < signs.length) {
+        setCurrentIndex(currentIndex + 1)
+        setSelectedOption(null)
       } else {
-        finishQuiz(newScore, Math.min(signs.length, 5))
+        finishQuiz(newScore, signs.length)
       }
-    }, 1000)
+    }, 1200)
   }
 
   const finishQuiz = async (finalScore: number, totalQuestions: number) => {
     setIsQuizFinished(true)
     if (user) {
       try {
-        setSavingResult(true)
+        setIsSaving(true)
         await quizService.saveQuizAttempt(user.id, finalScore, totalQuestions)
       } catch (err) {
-        console.error('Gagal menyimpan hasil kuis:', err)
+        console.error('Gagal simpan hasil kuis:', err)
       } finally {
-        setSavingResult(false)
+        setIsSaving(false)
       }
     }
   }
 
-  const handleRestartQuiz = () => {
-    setCurrentIndex(0)
-    setScore(0)
-    setIsQuizFinished(false)
-    fetchQuizData()
-  }
-
-  if (loading) {
+  // 1. TAMPILAN SETUP (SELEKSI MODE)
+  if (!quizStarted) {
     return (
-      <div className="max-w-xl mx-auto p-12 text-center">
-        <div className="w-12 h-12 bg-secondary-container border-2 border-primary rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-xs font-bold uppercase tracking-wider text-primary">Menyiapkan Kuis...</p>
+      <div className="max-w-5xl mx-auto space-y-8 pb-10 animate-in fade-in duration-300">
+        <div>
+          <h1 className="font-serif text-3xl font-bold text-[#004349]">Pilih Mode Latihan</h1>
+          <p className="text-xs text-[#3f484a]">Tentukan jumlah soal dan kategori materi kuis.</p>
+        </div>
+
+        {/* Option Jumlah Soal */}
+        <div className="bg-[#faf3e6] border-2 border-[#004349] rounded-3xl p-6 shadow-[6px_6px_0px_0px_#004349] space-y-3">
+          <div className="flex items-center gap-2 text-[#004349]">
+            <HelpCircle size={18} />
+            <h3 className="font-serif font-bold text-base">Pilih Jumlah Soal</h3>
+          </div>
+          <div className="flex gap-4">
+            {[5, 10].map((num) => (
+              <button
+                key={num}
+                onClick={() => setQuestionCount(num)}
+                className={`flex-1 py-3 px-6 rounded-2xl border-2 font-bold text-sm flex items-center justify-center gap-2 transition-all ${
+                  questionCount === num
+                    ? 'bg-[#ffbe4f] text-[#724d00] border-[#004349] shadow-[3px_3px_0px_0px_#004349]'
+                    : 'bg-[#fff9ee] text-[#004349] border-[#004349]/30'
+                }`}
+              >
+                {questionCount === num && <CheckCircle size={16} />}
+                <span>{num} Soal</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Card Pilihan Kategori */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            { id: 'Abjad', title: 'Kuis Abjad', desc: 'Tes hafalan isyarat A-Z', icon: <Type />, color: 'bg-[#ffbe4f]' },
+            { id: 'Angka', title: 'Kuis Angka', desc: 'Tes hafalan angka 1-10', icon: <Binary />, color: 'bg-[#ffdad2]' },
+            { id: 'Semua', title: 'Campuran', desc: 'Semua materi digabung acak', icon: <Layers />, color: 'bg-[#d0e0e3]' },
+          ].map((item) => (
+            <div
+              key={item.id}
+              onClick={() => startQuiz(item.id)}
+              className="cursor-pointer bg-[#faf3e6] border-2 border-[#004349] rounded-3xl p-8 shadow-[6px_6px_0px_0px_#004349] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+            >
+              <div className={`w-14 h-14 ${item.color} border-2 border-[#004349] rounded-2xl flex items-center justify-center mb-6 shadow-[3px_3px_0px_0px_#004349]`}>
+                {item.icon}
+              </div>
+              <h3 className="font-serif text-xl font-bold text-[#004349] mb-2">{item.title}</h3>
+              <p className="text-xs text-[#3f484a] mb-4">{item.desc}</p>
+              <div className="inline-block px-3 py-1 bg-[#fff9ee] border border-[#004349] rounded-full text-[10px] font-bold text-[#004349]">
+                Mulai {questionCount} Soal →
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     )
   }
 
-  if (signs.length === 0) {
+  // 2. TAMPILAN RESULT EVALUASI
+  if (isQuizFinished) {
+    const accuracy = Math.round((score / signs.length) * 100)
+    const isPassed = accuracy >= 70
+
     return (
-      <div className="max-w-xl mx-auto bg-surface border-2 border-primary rounded-2xl p-8 text-center shadow-hard">
-        <span className="material-symbols-outlined text-4xl text-primary mb-2">quiz</span>
-        <h2 className="font-headline text-xl font-bold text-primary mb-2">Materi Belum Cukup</h2>
-        <p className="text-xs text-on-surface-variant mb-6">Silakan tambahkan data isyarat terlebih dahulu di database Supabase.</p>
-        <Link
-          to="/dashboard/learn"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-secondary-container border-2 border-primary rounded-xl text-xs font-bold text-on-secondary-container shadow-hard-sm"
-        >
-          <span>Buka Modul Belajar</span>
-        </Link>
+      <div className="max-w-2xl mx-auto bg-[#faf3e6] border-2 border-[#004349] rounded-3xl p-8 shadow-[8px_8px_0px_0px_#004349] space-y-6 text-center animate-in fade-in">
+        <div className="w-20 h-20 bg-[#ffbe4f] border-2 border-[#004349] rounded-full flex items-center justify-center mx-auto shadow-[4px_4px_0px_0px_#004349]">
+          <Trophy className="w-10 h-10 text-[#724d00]" />
+        </div>
+        <div>
+          <h2 className="font-serif text-3xl font-bold text-[#004349]">{isPassed ? 'Evaluasi Bagus Sekali!' : 'Coba Lagi & Tingkatkan!'}</h2>
+          <p className="text-xs font-medium text-[#3f484a] mt-1">{isSaving ? 'Menyimpan statistik...' : 'Hasil kuis tersimpan dan streak harianmu aktif!'}</p>
+        </div>
+
+        <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-4 flex items-center justify-between shadow-[3px_3px_0px_0px_#004349]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl flex items-center justify-center text-[#741a06]">
+              <Flame className="w-6 h-6 fill-[#741a06]" />
+            </div>
+            <div className="text-left">
+              <h4 className="font-bold text-xs text-[#004349]">Streak Harian Diperbarui</h4>
+              <p className="text-[10px] text-[#3f484a]">Progres belajar tersimpan di Dashboard.</p>
+            </div>
+          </div>
+          <span className="px-3 py-1 bg-[#ffbe4f] border border-[#004349] rounded-full text-[10px] font-bold text-[#724d00]">Active</span>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3 text-left">
+          <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-4 shadow-[3px_3px_0px_0px_#004349]">
+            <span className="text-[10px] font-bold text-[#3f484a] uppercase block mb-1">Skor Akhir</span>
+            <span className="font-serif text-2xl font-bold text-[#004349]">{score} / {signs.length}</span>
+          </div>
+          <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-4 shadow-[3px_3px_0px_0px_#004349]">
+            <span className="text-[10px] font-bold text-[#3f484a] uppercase block mb-1">Akurasi</span>
+            <span className="font-serif text-2xl font-bold text-[#004349]">{accuracy}%</span>
+          </div>
+          <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-4 shadow-[3px_3px_0px_0px_#004349]">
+            <span className="text-[10px] font-bold text-[#3f484a] uppercase block mb-1">Status</span>
+            <span className={`font-serif text-sm font-bold block mt-1 ${isPassed ? 'text-[#004349]' : 'text-[#ba1a1a]'}`}>{isPassed ? 'Sangat Baik' : 'Perlu Latihan'}</span>
+          </div>
+        </div>
+
+        <div className="flex gap-4 pt-2">
+          <button onClick={() => window.location.reload()} className="flex-1 py-3.5 bg-[#fff9ee] border-2 border-[#004349] rounded-xl font-bold text-xs uppercase text-[#004349] shadow-[3px_3px_0px_0px_#004349] flex items-center justify-center gap-2">
+            <RotateCcw className="w-4 h-4" /><span>Kuis Lain</span>
+          </button>
+          <Link to="/dashboard" className="flex-1 py-3.5 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl font-bold text-xs uppercase text-[#724d00] shadow-[3px_3px_0px_0px_#004349] flex items-center justify-center gap-2">
+            <LayoutDashboard className="w-4 h-4" /><span>Dashboard</span>
+          </Link>
+        </div>
       </div>
     )
   }
 
+  // 3. TAMPILAN GAMEPLAY (PEMANGGIL MEDIA)
   const currentSign = signs[currentIndex]
-  const totalQuestions = Math.min(signs.length, 5)
-
   return (
-    <div className="max-w-xl mx-auto space-y-6 pb-16">
-      
-      {/* TAMPILAN 1: KUIS AKTIF */}
-      {!isQuizFinished ? (
-        <div className="bg-surface-container-low border-2 border-primary rounded-2xl p-6 shadow-hard relative">
-          {/* Tape Decor */}
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-secondary-container/80 border border-primary/30 -rotate-1" />
+    <div className="max-w-6xl mx-auto space-y-6">
+      <div className="flex items-center justify-between">
+        <button onClick={() => window.location.reload()} className="flex items-center gap-2 text-xs font-bold text-[#004349] hover:underline">
+          <ArrowLeft size={16} /> Batal & Keluar
+        </button>
+        <div className="flex items-center gap-2">
+          <span className="px-3 py-1 bg-[#faf3e6] border border-[#004349] rounded-full text-xs font-bold text-[#004349]">
+            {questionCount} Soal
+          </span>
+          <span className="px-3 py-1 bg-[#ffbe4f] border-2 border-[#004349] rounded-full text-xs font-bold text-[#724d00]">
+            Kategori: {category}
+          </span>
+        </div>
+      </div>
 
-          {/* Header Progress */}
-          <div className="flex items-center justify-between mb-4 pt-2">
-            <span className="text-xs font-bold text-primary uppercase tracking-wider">
-              Soal {currentIndex + 1} dari {totalQuestions}
+      <div className="flex flex-col lg:flex-row gap-8 items-stretch">
+        {/* Kolom Kiri: Render Media Gambar / Video dari Supabase */}
+        <div className="flex-1 bg-[#faf3e6] border-2 border-[#004349] rounded-3xl p-6 shadow-[6px_6px_0px_0px_#004349]">
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#3f484a]">
+              Soal {currentIndex + 1} dari {signs.length}
             </span>
-            <div className="px-3 py-1 bg-surface border border-primary rounded-full text-xs font-bold text-tertiary shadow-hard-sm flex items-center gap-1">
-              <span className="material-symbols-outlined text-sm text-tertiary">star</span>
-              <span>Skor: {score}</span>
+            <div className="w-36 bg-[#fff9ee] h-2.5 rounded-full border border-[#004349]/30 overflow-hidden">
+              <div className="bg-[#ffbe4f] h-full transition-all duration-300" style={{ width: `${((currentIndex + 1) / signs.length) * 100}%` }} />
             </div>
           </div>
 
-          {/* Progress Bar */}
-          <div className="w-full bg-surface border border-primary/30 h-2.5 rounded-full overflow-hidden mb-6 p-0.5">
-            <div
-              className="bg-secondary-container h-full rounded-full transition-all duration-300"
-              style={{ width: `${((currentIndex + 1) / totalQuestions) * 100}%` }}
-            />
+          <div className="aspect-video bg-[#004349] rounded-2xl overflow-hidden border-2 border-[#004349] shadow-[4px_4px_0px_0px_#004349] flex items-center justify-center p-2">
+            {currentSign.mediaType === 'video' ? (
+              <video 
+                key={currentSign.mediaUrl} 
+                src={currentSign.mediaUrl} 
+                autoPlay loop muted playsInline 
+                className="w-full h-full object-cover rounded-xl" 
+              />
+            ) : (
+              <img 
+                key={currentSign.mediaUrl} 
+                src={currentSign.mediaUrl} 
+                alt="Sign Quiz" 
+                className="w-full h-full object-contain p-2" 
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Kolom Kanan: Pilihan Jawaban */}
+        <div className="w-full lg:w-[400px] flex flex-col justify-center space-y-6">
+          <div className="space-y-1">
+            <h2 className="font-serif text-2xl font-bold text-[#004349]">{currentSign.questionText}</h2>
+            <p className="text-xs text-[#3f484a]">Pilih jawaban yang melambangkan instruksi gambar/video di samping.</p>
           </div>
 
-          {/* Prompt Title */}
-          <div className="text-center mb-4">
-            <h2 className="font-headline text-xl font-bold text-primary">Tebak Gerakan Isyarat Ini!</h2>
-            <p className="text-xs text-on-surface-variant">Perhatikan video di bawah, lalu pilih huruf yang sesuai.</p>
-          </div>
-
-          {/* Video Player Box */}
-          <div className="aspect-video bg-on-surface/90 border-2 border-primary rounded-xl overflow-hidden shadow-hard mb-6 relative">
-            <video
-              src={currentSign.video_url}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          {/* 4 Pilihan Jawaban */}
-          <div className="grid grid-cols-2 gap-3">
-            {options.map((option, idx) => {
+          <div className="grid grid-cols-1 gap-3.5">
+            {currentSign.options.map((option, idx) => {
               const isSelected = selectedOption === option
-              const isCorrect = option === currentSign.label
-
-              let btnStyle = 'bg-surface text-primary border-primary hover:bg-surface-container-low shadow-hard'
-              if (selectedOption !== null) {
-                if (isCorrect) {
-                  btnStyle = 'bg-secondary-container text-on-secondary-container border-primary shadow-hard-sm'
-                } else if (isSelected) {
-                  btnStyle = 'bg-tertiary-container/30 text-tertiary border-tertiary shadow-none'
-                }
+              const isCorrect = option === currentSign.correctAnswer
+              let style = "bg-[#fff9ee] border-[#004349] text-[#004349] hover:bg-[#ffbe4f]/20 shadow-[4px_4px_0px_0px_#004349]"
+              if (selectedOption) {
+                if (isCorrect) style = "bg-[#ffbe4f] border-[#004349] text-[#724d00] shadow-none translate-x-[2px] translate-y-[2px]"
+                else if (isSelected) style = "bg-[#ffdad2] border-[#ba1a1a] text-[#ba1a1a] shadow-none translate-x-[2px] translate-y-[2px]"
               }
 
               return (
-                <button
-                  key={idx}
-                  onClick={() => handleSelectOption(option)}
-                  disabled={selectedOption !== null}
-                  className={`p-4 rounded-xl border-2 font-headline text-2xl font-bold uppercase transition-all duration-200 ${btnStyle}`}
+                <button 
+                  key={idx} 
+                  disabled={!!selectedOption} 
+                  onClick={() => handleSelectOption(option)} 
+                  className={`w-full p-4 rounded-2xl border-2 font-serif text-lg font-bold transition-all text-left flex justify-between items-center ${style}`}
                 >
-                  {option}
+                  <span>{option}</span>
+                  {selectedOption && isCorrect && <Check className="w-5 h-5 text-[#724d00] stroke-[3]" />}
+                  {selectedOption && isSelected && !isCorrect && <X className="w-5 h-5 text-[#ba1a1a] stroke-[3]" />}
                 </button>
               )
             })}
           </div>
         </div>
-      ) : (
-        
-        /* TAMPILAN 2: HASIL KUIS (RECAP) */
-        <div className="bg-surface-container-low border-2 border-primary rounded-2xl p-8 text-center shadow-hard relative">
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-secondary-container/80 border border-primary/30 rotate-1" />
-
-          {/* Icon Trophy / Stars */}
-          <div className="w-20 h-20 bg-secondary-container border-2 border-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-hard">
-            <span className="material-symbols-outlined text-4xl text-primary">emoji_events</span>
-          </div>
-
-          <h2 className="font-headline text-3xl font-bold text-primary mb-1">
-            {score === totalQuestions ? 'Sempurna!' : score > 2 ? 'Bagus Sekali!' : 'Tetap Semangat!'}
-          </h2>
-          <p className="text-xs text-on-surface-variant mb-6">
-            Kamu telah menyelesaikan sesi latihan tebak isyarat.
-          </p>
-
-          {/* Score Box */}
-          <div className="bg-surface border-2 border-primary rounded-2xl p-6 shadow-hard mb-6 max-w-xs mx-auto">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant block mb-1">
-              Skor Akhir Kamu
-            </span>
-            <div className="font-headline text-5xl font-extrabold text-primary mb-1">
-              {score} <span className="text-2xl text-on-surface-variant">/ {totalQuestions}</span>
-            </div>
-            <span className="inline-block px-3 py-1 bg-secondary-container border border-primary rounded-full text-xs font-bold text-on-secondary-container">
-              Akurasi {Math.round((score / totalQuestions) * 100)}%
-            </span>
-          </div>
-
-          {savingResult && (
-            <p className="text-[11px] text-on-surface-variant mb-4 italic">Menyimpan skor ke database...</p>
-          )}
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <button
-              onClick={handleRestartQuiz}
-              className="flex-1 bg-surface text-primary border-2 border-primary font-bold text-xs uppercase tracking-wider py-3.5 px-5 rounded-xl shadow-hard hover:shadow-hard-lg active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2"
-            >
-              <span className="material-symbols-outlined text-base">refresh</span>
-              <span>Coba Lagi</span>
-            </button>
-
-            <Link
-              to="/dashboard"
-              className="flex-1 bg-secondary-container text-on-secondary-container border-2 border-primary font-bold text-xs uppercase tracking-wider py-3.5 px-5 rounded-xl shadow-hard hover:shadow-hard-lg active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2 text-center"
-            >
-              <span>Kembali ke Dashboard</span>
-              <span className="material-symbols-outlined text-base">arrow_forward</span>
-            </Link>
-          </div>
-        </div>
-      )}
-
+      </div>
     </div>
   )
 }

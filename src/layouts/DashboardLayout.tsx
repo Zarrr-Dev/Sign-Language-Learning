@@ -6,7 +6,6 @@ import {
   Award, 
   User, 
   LogOut, 
-  Sparkles, 
   Flame, 
   Menu, 
   X 
@@ -36,23 +35,30 @@ export const DashboardLayout = () => {
     { label: 'Profil Saya', path: '/dashboard/profile', icon: User },
   ]
 
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
+  const firstLetter = userName.charAt(0).toUpperCase()
+
   return (
-    <div className="min-h-screen bg-[#000000] text-white flex flex-col md:flex-row font-sans">
+    <div className="min-h-screen bg-[#fff9ee] text-[#1e1b14] flex flex-col md:flex-row font-sans dot-grid">
       
-
-      <aside className="hidden md:flex flex-col w-64 bg-[#0F0F0F] border-r border-white/[0.08] p-5 h-screen sticky top-0 z-30 justify-between">
+      {/* 1. SIDEBAR DESKTOP */}
+      <aside className="hidden md:flex flex-col w-64 bg-[#faf3e6] border-r-2 border-[#004349] p-5 h-screen sticky top-0 z-30 justify-between shadow-[4px_0px_0px_0px_#004349]">
         <div>
-
-          <Link to="/dashboard" className="flex items-center gap-3 px-2 py-3 mb-6">
-            <div className="p-2 bg-blue-600/10 rounded-xl border border-blue-500/20 text-blue-400">
-              <Sparkles className="w-5 h-5" />
+          {/* Logo HandTalk */}
+          <Link to="/dashboard" className="flex items-center gap-3 px-2 py-3 mb-6 border-b-2 border-[#004349]/20 pb-4">
+            <div className="w-9 h-9 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl flex items-center justify-center font-bold text-[#004349] shadow-[2px_2px_0px_0px_#004349]">
+              <span className="material-symbols-outlined text-xl">handshake</span>
             </div>
-            <span className="text-lg font-bold text-white tracking-tight">
-              HandTalk <span className="text-blue-500">Learn</span>
-            </span>
+            <div>
+              <span className="text-lg font-bold font-serif text-[#004349] tracking-tight block">
+                HandTalk
+              </span>
+              <span className="text-[10px] font-bold text-[#724d00] uppercase tracking-wider block">Jurnal Belajar</span>
+            </div>
           </Link>
 
-          <nav className="space-y-1.5">
+          {/* Menu Sidebar */}
+          <nav className="space-y-2">
             {navItems.map((item) => {
               const Icon = item.icon
               const isActive = location.pathname === item.path
@@ -60,10 +66,10 @@ export const DashboardLayout = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all border-2 ${
                     isActive
-                      ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20 shadow-lg shadow-blue-500/5'
-                      : 'text-[#B5B5B5] hover:text-white hover:bg-[#171717]'
+                      ? 'bg-[#ffbe4f] text-[#724d00] border-[#004349] shadow-[3px_3px_0px_0px_#004349]'
+                      : 'bg-transparent text-[#004349] border-transparent hover:bg-[#fff9ee] hover:border-[#004349]/40'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -73,50 +79,53 @@ export const DashboardLayout = () => {
             })}
           </nav>
         </div>
-
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors w-full border border-transparent hover:border-red-500/20"
-        >
-          <LogOut className="w-4 h-4" />
-          Keluar Sesi
-        </button>
       </aside>
 
+      {/* 2. AREA UTAMA */}
       <div className="flex-1 flex flex-col min-w-0">
         
-        <header className="h-16 bg-[#0F0F0F]/80 backdrop-blur-xl border-b border-white/[0.08] px-6 flex items-center justify-between sticky top-0 z-20">
+        {/* Header Atas */}
+        <header className="h-16 bg-[#fff9ee] border-b-2 border-[#004349] px-6 flex items-center justify-between sticky top-0 z-20 shadow-[0px_4px_0px_0px_#004349]">
+          {/* Tombol Menu Mobile */}
           <div className="flex items-center gap-3 md:hidden">
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-[#B5B5B5] hover:text-white"
+              className="p-1.5 text-[#004349] border-2 border-[#004349] bg-[#faf3e6] rounded-lg shadow-[2px_2px_0px_0px_#004349]"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-            <span className="font-bold text-white text-sm">HandTalk</span>
+            <Link to="/dashboard" className="font-bold font-serif text-[#004349] text-base underline decoration-[#ffbe4f] decoration-4 underline-offset-4">
+              HandTalk
+            </Link>
           </div>
 
           <div className="hidden md:block">
-            <h2 className="text-sm font-semibold text-[#B5B5B5]">
-              Selamat datang kembali,<span className="text-white">{user?.user_metadata?.full_name || user?.email}</span>!
-            </h2>
-          </div>
+            <h2 className="text-sm font-bold text-[#004349]">
+    Selamat datang kembali, <span className="underline decoration-[#ffbe4f] decoration-4">{userName}</span>! 👋
+  </h2>
+</div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold">
-              <Flame className="w-4 h-4 fill-amber-400" />
+          {/* Kanan: Streak & Profil Link */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#faf3e6] border-2 border-[#004349] text-[#724d00] text-xs font-bold shadow-[2px_2px_0px_0px_#004349]">
+              <Flame className="w-4 h-4 fill-[#741a06] text-[#741a06]" />
               <span>3 Hari Streak</span>
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-xs font-bold text-blue-400">
-              {user?.email?.charAt(0).toUpperCase()}
-            </div>
+            {/* Avatar Profil -> Redirect ke Halaman Profile */}
+            <Link 
+              to="/dashboard/profile"
+              title="Buka Profil"
+              className="w-9 h-9 rounded-full bg-[#ffbe4f] border-2 border-[#004349] flex items-center justify-center text-xs font-bold text-[#724d00] shadow-[2px_2px_0px_0px_#004349] hover:translate-x-[1px] hover:translate-y-[1px] transition-all overflow-hidden shrink-0"
+            >
+              {firstLetter}
+            </Link>
           </div>
         </header>
 
-
+        {/* Menu Dropdown Mobile */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-[#0F0F0F] border-b border-white/[0.08] p-4 space-y-2">
+          <div className="md:hidden bg-[#faf3e6] border-b-2 border-[#004349] p-4 space-y-2 shadow-[0px_4px_0px_0px_#004349]">
             {navItems.map((item) => {
               const Icon = item.icon
               const isActive = location.pathname === item.path
@@ -125,8 +134,10 @@ export const DashboardLayout = () => {
                   key={item.path}
                   to={item.path}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium ${
-                    isActive ? 'bg-blue-600/10 text-blue-400' : 'text-[#B5B5B5]'
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold border-2 transition-all ${
+                    isActive 
+                      ? 'bg-[#ffbe4f] text-[#724d00] border-[#004349] shadow-[2px_2px_0px_0px_#004349]' 
+                      : 'bg-transparent text-[#004349] border-transparent'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -136,7 +147,7 @@ export const DashboardLayout = () => {
             })}
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-400 w-full text-left"
+              className="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-white bg-[#ba1a1a] border-2 border-[#004349] rounded-xl w-full shadow-[2px_2px_0px_0px_#004349]"
             >
               <LogOut className="w-4 h-4" />
               Keluar Sesi
@@ -144,7 +155,8 @@ export const DashboardLayout = () => {
           </div>
         )}
 
-        <main className="p-6 md:p-8 flex-1 bg-[#000000]">
+        {/* Tempat Render Halaman */}
+        <main className="p-4 md:p-8 flex-1 bg-[#fff9ee] max-w-4xl w-full mx-auto">
           <Outlet />
         </main>
       </div>

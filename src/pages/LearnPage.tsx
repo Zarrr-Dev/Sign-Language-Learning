@@ -1,28 +1,33 @@
 import React, { useEffect, useState } from 'react'
-import { signService } from '../services/signService'
-import type { Sign } from '../services/signService'
+import { signService, type Sign } from '../services/signService'
+import { useAuth } from '../context/AuthContext'
+import { userService } from '../services/userService'
 
 export const LearnPage = () => {
+  const { user } = useAuth()
   const [signs, setSigns] = useState<Sign[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<string>('Semua')
   const [selectedSign, setSelectedSign] = useState<Sign | null>(null)
   const [masteredIds, setMasteredIds] = useState<string[]>([])
 
   useEffect(() => {
-    fetchSigns()
+    signService.getAllSigns().then((data) => {
+      setSigns(data)
+      setLoading(false)
+    })
   }, [])
 
-  const fetchSigns = async () => {
-    try {
-      setLoading(true)
-      const data = await signService.getAllSigns()
-      setSigns(data)
-    } catch (err) {
-      console.error('Error fetching signs:', err)
-    } finally {
-      setLoading(false)
+  const triggerLearningActivity = async () => {
+    if (user?.id) {
+      await userService.updateStreak(user.id)
     }
+  }
+
+  const handleOpenDetail = (sign: Sign) => {
+    setSelectedSign(sign)
+    triggerLearningActivity()
   }
 
   const toggleMastered = (id: string, e: React.MouseEvent) => {
@@ -30,93 +35,117 @@ export const LearnPage = () => {
     setMasteredIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     )
+    triggerLearningActivity()
   }
 
-  const filteredSigns = signs.filter(
-    (sign) =>
+  const categories = ['Semua', 'Abjad', 'Angka', 'Kata Dasar']
+
+  const filteredSigns = signs.filter((sign) => {
+    const matchesSearch =
       sign.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
       sign.category.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+    const matchesCategory =
+      selectedCategory === 'Semua' || sign.category === selectedCategory
+
+    return matchesSearch && matchesCategory
+  })
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto pb-16">
+    <div className="max-w-6xl mx-auto space-y-8 pb-12 text-[#1e1b14] select-none">
       
-      {/* Header Section */}
-      <div className="bg-surface-container-low border-2 border-primary rounded-2xl p-6 shadow-hard relative overflow-hidden">
-        {/* Tape Decor */}
-        <div className="absolute -top-3 left-8 w-20 h-6 bg-secondary-container/60 border border-primary/30 rotate-1" />
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container border border-primary text-[11px] font-bold text-on-secondary-container shadow-hard-sm mb-2">
+      <div className="bg-[#faf3e6] border-2 border-[#004349] rounded-3xl p-6 md:p-8 shadow-[8px_8px_0px_0px_#004349] relative">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-1 text-left">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffbe4f] border border-[#004349] text-xs font-bold text-[#724d00] shadow-[2px_2px_0px_0px_#004349]">
               <span className="material-symbols-outlined text-sm">auto_stories</span>
-              Katalog Isyarat
+              Katalog Isyarat Supabase
             </span>
-            <h1 className="font-headline text-2xl md:text-3xl font-bold text-primary">
+            <h1 className="font-serif text-3xl font-extrabold text-[#004349] pt-1">
               Modul Pembelajaran
             </h1>
-            <p className="text-xs md:text-sm text-on-surface-variant mt-1">
-              Pilih huruf atau kata di bawah untuk mempelajari gerakan isyaratnya.
+            <p className="text-xs md:text-sm text-[#3f484a] max-w-xl">
+              Eksplorasi materi isyarat langsung dari database. Setiap kali kamu belajar, streak harianmu otomatis terhubung!
             </p>
           </div>
 
-          {/* Search Field */}
-          <div className="relative w-full md:w-72">
-            <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-primary text-xl">
+          <div className="relative w-full md:w-80 shrink-0">
+            <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#004349] text-xl">
               search
             </span>
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Cari isyarat (misal: 'A')..."
-              className="w-full bg-surface border-2 border-primary rounded-xl pl-10 pr-4 py-2.5 text-xs md:text-sm text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary shadow-hard-sm transition-all"
+              placeholder="Cari isyarat..."
+              className="w-full bg-[#fff9ee] border-2 border-[#004349] rounded-2xl pl-10 pr-4 py-3 text-xs md:text-sm font-medium text-[#1e1b14] placeholder-[#3f484a]/60 shadow-[3px_3px_0px_0px_#004349] focus:outline-none focus:ring-2 focus:ring-[#004349]"
             />
           </div>
         </div>
+
+        {/* Filter Pills */}
+        <div className="flex items-center gap-2.5 overflow-x-auto pt-6 border-t border-[#004349]/15 mt-6">
+          <span className="text-xs font-bold text-[#004349] shrink-0 mr-1 flex items-center gap-1">
+            <span className="material-symbols-outlined text-sm">filter_alt</span>
+            Filter:
+          </span>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-1.5 rounded-full border-2 text-xs font-bold transition-all whitespace-nowrap ${
+                selectedCategory === cat
+                  ? 'bg-[#004349] text-[#fff9ee] border-[#004349] shadow-[2px_2px_0px_0px_#ffbe4f]'
+                  : 'bg-[#fff9ee] text-[#004349] border-[#004349]/30 hover:border-[#004349]'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Grid Content / Loading */}
+      {/* Grid Katalog Isyarat */}
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6].map((n) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
             <div
               key={n}
-              className="h-44 bg-surface-container border-2 border-primary/20 rounded-2xl animate-pulse"
+              className="h-56 bg-[#faf3e6] border-2 border-[#004349]/20 rounded-2xl animate-pulse"
             />
           ))}
         </div>
       ) : filteredSigns.length === 0 ? (
-        <div className="bg-surface border-2 border-primary rounded-2xl p-12 text-center text-on-surface-variant shadow-hard">
-          <span className="material-symbols-outlined text-4xl text-primary mb-2">search_off</span>
-          <p className="text-xs font-bold uppercase tracking-wider">Materi tidak ditemukan</p>
+        <div className="bg-[#faf3e6] border-2 border-[#004349] rounded-3xl p-12 text-center text-[#3f484a] shadow-[6px_6px_0px_0px_#004349]">
+          <span className="material-symbols-outlined text-5xl text-[#004349] mb-2">search_off</span>
+          <h3 className="font-serif text-lg font-bold text-[#004349]">Materi Tidak Ditemukan</h3>
+          <p className="text-xs mt-1">Coba gunakan kata kunci lain atau ubah filter kategori.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
           {filteredSigns.map((sign) => {
             const isMastered = masteredIds.includes(sign.id)
             return (
               <div
                 key={sign.id}
-                onClick={() => setSelectedSign(sign)}
-                className={`cursor-pointer border-2 border-primary rounded-2xl p-4 flex flex-col justify-between h-48 relative transition-all duration-200 group ${
+                onClick={() => handleOpenDetail(sign)}
+                className={`cursor-pointer border-2 border-[#004349] rounded-2xl p-4 flex flex-col justify-between h-56 relative transition-all duration-200 group ${
                   isMastered
-                    ? 'bg-secondary-container/30 shadow-hard-sm'
-                    : 'bg-surface hover:bg-surface-container-low shadow-hard hover:shadow-hard-lg hover:-translate-y-1'
+                    ? 'bg-[#ffbe4f]/25 shadow-[3px_3px_0px_0px_#004349]'
+                    : 'bg-[#fff9ee] hover:bg-[#faf3e6] shadow-[5px_5px_0px_0px_#004349] hover:-translate-y-0.5'
                 }`}
               >
-                {/* Top Badge & Checkmark */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-surface border border-primary text-primary">
+                  <span className="text-[9px] font-bold px-2.5 py-0.5 rounded-full bg-[#faf3e6] border border-[#004349] text-[#004349]">
                     {sign.category}
                   </span>
 
                   <button
                     onClick={(e) => toggleMastered(sign.id, e)}
-                    className={`w-7 h-7 rounded-full border border-primary flex items-center justify-center transition-all ${
+                    className={`w-7 h-7 rounded-full border border-[#004349] flex items-center justify-center transition-all ${
                       isMastered
-                        ? 'bg-primary text-on-primary shadow-hard-sm'
-                        : 'bg-surface text-primary/40 hover:text-primary hover:bg-secondary-container'
+                        ? 'bg-[#004349] text-white shadow-[1px_1px_0px_0px_#004349]'
+                        : 'bg-[#fff9ee] text-[#004349]/40 hover:text-[#004349] hover:bg-[#ffbe4f]'
                     }`}
                     title={isMastered ? 'Tandai Belum Dikuasai' : 'Tandai Dikuasai'}
                   >
@@ -126,16 +155,14 @@ export const LearnPage = () => {
                   </button>
                 </div>
 
-                {/* Card Title */}
-                <div className="text-center my-auto">
-                  <h3 className="font-headline text-4xl font-extrabold text-primary group-hover:scale-110 transition-transform duration-200">
+                <div className="text-center my-auto py-2">
+                  <h3 className="font-serif text-3xl font-extrabold text-[#004349] group-hover:scale-110 transition-transform duration-200">
                     {sign.label}
                   </h3>
                 </div>
 
-                {/* Footer Link */}
-                <div className="flex items-center justify-center gap-1 text-[11px] font-bold text-primary uppercase tracking-wider">
-                  <span className="material-symbols-outlined text-base">play_circle</span>
+                <div className="flex items-center justify-center gap-1.5 py-1.5 px-3 bg-[#faf3e6] border border-[#004349] rounded-xl text-[10px] font-bold text-[#004349] uppercase tracking-wider group-hover:bg-[#ffbe4f] transition-colors">
+                  <span className="material-symbols-outlined text-sm">play_circle</span>
                   <span>Putar Video</span>
                 </div>
               </div>
@@ -144,70 +171,77 @@ export const LearnPage = () => {
         </div>
       )}
 
-      {/* Modal Video Player & Detail Pelajaran */}
+      {/* Modal Detail & Player Media dari Supabase */}
       {selectedSign && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-surface/60 backdrop-blur-sm">
-          <div className="bg-surface border-2 border-primary rounded-2xl max-w-xl w-full p-6 relative shadow-hard-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            {/* Tape Decor */}
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-secondary-container/80 border border-primary/30 -rotate-1" />
-
-            {/* Close Button */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1e1b14]/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-3xl max-w-md w-full p-6 relative shadow-[10px_10px_0px_0px_#004349] overflow-hidden">
+            
             <button
               onClick={() => setSelectedSign(null)}
-              className="absolute top-4 right-4 w-9 h-9 bg-surface-container border-2 border-primary rounded-full flex items-center justify-center text-primary hover:bg-secondary-container shadow-hard-sm transition-all"
+              className="absolute top-4 right-4 w-9 h-9 bg-[#faf3e6] border-2 border-[#004349] rounded-full flex items-center justify-center text-[#004349] hover:bg-[#ffbe4f] shadow-[2px_2px_0px_0px_#004349] transition-all z-10"
             >
               <span className="material-symbols-outlined text-xl">close</span>
             </button>
 
-            {/* Modal Header */}
-            <div className="flex items-center gap-3 mb-4 pt-2">
-              <div className="w-10 h-10 bg-secondary-container border-2 border-primary rounded-xl flex items-center justify-center text-primary shadow-hard-sm">
+            <div className="flex items-center gap-3 mb-4 pr-10">
+              <div className="w-10 h-10 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl flex items-center justify-center text-[#004349] shadow-[2px_2px_0px_0px_#004349] shrink-0">
                 <span className="material-symbols-outlined text-xl">videocam</span>
               </div>
               <div>
-                <h2 className="font-headline text-xl font-bold text-primary">
+                <h2 className="font-serif text-xl font-bold text-[#004349]">
                   Isyarat '{selectedSign.label}'
                 </h2>
-                <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">
+                <span className="text-[10px] font-bold text-[#3f484a] uppercase tracking-wider">
                   Kategori: {selectedSign.category}
                 </span>
               </div>
             </div>
 
-            {/* Video Player Box */}
-            <div className="relative aspect-video bg-on-surface/90 rounded-xl overflow-hidden border-2 border-primary shadow-hard mb-4">
-              <video
-                src={selectedSign.video_url}
-                controls
-                autoPlay
-                className="w-full h-full object-cover"
-              />
+            {/* Video / Image Render dari Supabase Storage */}
+            <div className="relative aspect-video bg-[#004349] rounded-2xl overflow-hidden border-2 border-[#004349] shadow-[4px_4px_0px_0px_#004349] mb-5 flex items-center justify-center">
+              {selectedSign.video_url?.endsWith('.mp4') || selectedSign.video_url?.endsWith('.webm') ? (
+                <video
+                  key={selectedSign.video_url}
+                  src={selectedSign.video_url}
+                  controls
+                  autoPlay
+                  loop
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <img
+                  key={selectedSign.video_url}
+                  src={selectedSign.video_url}
+                  alt={selectedSign.label}
+                  className="w-full h-full object-contain p-4 bg-[#fff9ee]"
+                />
+              )}
             </div>
 
-            {/* Description Box */}
-            <div className="bg-surface-container-low border-2 border-primary/40 rounded-xl p-4 mb-6">
-              <h4 className="text-[10px] font-bold uppercase tracking-wider text-primary mb-1">
-                Panduan & Detail Gerakan
+            <div className="bg-[#faf3e6] border-2 border-[#004349] rounded-2xl p-4 mb-5 shadow-[3px_3px_0px_0px_#004349]">
+              <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#004349] mb-1">
+                Panduan Gerakan Isyarat
               </h4>
-              <p className="text-xs text-on-surface-variant leading-relaxed">
+              <p className="text-xs text-[#3f484a] leading-relaxed">
                 {selectedSign.description ||
-                  'Perhatikan bentuk jari, lekukan, serta posisi telapak tangan dengan saksama.'}
+                  'Perhatikan bentuk jari, posisi telapak tangan, dan arah gerakan dengan saksama.'}
               </p>
             </div>
 
-            {/* Complete Lesson Action */}
             <button
               onClick={() => {
                 if (!masteredIds.includes(selectedSign.id)) {
                   setMasteredIds((prev) => [...prev, selectedSign.id])
                 }
+                triggerLearningActivity()
                 setSelectedSign(null)
               }}
-              className="w-full bg-secondary-container text-on-secondary-container font-bold text-xs uppercase tracking-wider py-3.5 px-6 rounded-xl border-2 border-primary shadow-hard hover:shadow-hard-lg active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2"
+              className="w-full bg-[#ffbe4f] text-[#724d00] font-bold text-xs uppercase tracking-wider py-3.5 px-4 rounded-2xl border-2 border-[#004349] shadow-[4px_4px_0px_0px_#004349] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2"
             >
               <span className="material-symbols-outlined text-lg">check_circle</span>
-              <span>Selesaikan Pelajaran</span>
+              <span>Selesaikan Pelajaran Ini</span>
             </button>
+
           </div>
         </div>
       )}
