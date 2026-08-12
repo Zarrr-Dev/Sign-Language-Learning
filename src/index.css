@@ -50,3 +50,35 @@
     background-size: 100% 100%;
   }
 }
+      .goog-te-banner-frame.skiptranslate {
+        display: none !important;
+      }
+      body {
+        top: 0px !important;
+      }
+
+      #google_translate_element {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        background-color: #faf3e6;
+        border: 2px solid #004349;
+        border-radius: 12px;
+        padding: 4px 8px;
+        box-shadow: 3px 3px 0px 0px #004349;
+      }
+      .goog-te-gadget {
+        font-family: 'Karla', sans-serif !important;
+        font-size: 11px !important;
+        color: #004349 !important;
+      }
+      .goog-te-combo {
+        border: 1px solid #004349 !important;
+        border-radius: 6px !important;
+        padding: 2px 4px !important;
+        background-color: #fff9ee !important;
+        color: #004349 !important;
+        font-weight: bold !important;
+        outline: none !important;
+      }
