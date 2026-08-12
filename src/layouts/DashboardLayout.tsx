@@ -24,7 +24,7 @@ export const DashboardLayout = () => {
   const [streakCount, setStreakCount] = useState<number>(0)
   const [isStreakActiveToday, setIsStreakActiveToday] = useState<boolean>(false)
 
-  // 🔥 PERBAIKAN DI SINI: Tarik data profil untuk cek streak setiap kali rute (halaman) berubah
+  // Tarik data profil untuk cek streak setiap kali rute (halaman) berubah
   useEffect(() => {
     if (user) {
       userService.getUserProfile(user.id)
@@ -32,7 +32,7 @@ export const DashboardLayout = () => {
           if (profile) {
             setStreakCount(profile.streak_count || 0)
             
-            // Menggunakan toLocaleDateString('en-CA') agar format YYYY-MM-DD sesuai dengan zona waktu lokal (WIB/Indonesia)
+            // Format YYYY-MM-DD lokal (WIB/Indonesia)
             const today = new Date().toLocaleDateString('en-CA')
             
             setIsStreakActiveToday(profile.last_activity_date === today)
@@ -40,7 +40,7 @@ export const DashboardLayout = () => {
         })
         .catch(err => console.error('Gagal memuat streak di layout:', err))
     }
-  }, [user, location.pathname]) // <-- Menambahkan location.pathname agar state tidak basi saat pindah halaman
+  }, [user, location.pathname])
 
   const handleLogout = async () => {
     try {
@@ -67,14 +67,14 @@ export const DashboardLayout = () => {
       {/* 1. SIDEBAR DESKTOP */}
       <aside className="hidden md:flex flex-col w-64 bg-[#faf3e6] border-r-2 border-[#004349] p-5 h-screen sticky top-0 z-30 justify-between shadow-[4px_0px_0px_0px_#004349]">
         <div>
-          {/* Logo HandTalk */}
+          {/* Logo & Brand Aplikasi */}
           <Link to="/dashboard" className="flex items-center gap-3 px-2 py-3 mb-6 border-b-2 border-[#004349]/20 pb-4">
             <div className="w-9 h-9 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl flex items-center justify-center font-bold text-[#004349] shadow-[2px_2px_0px_0px_#004349]">
-              <span className="material-symbols-outlined text-xl">handshake</span>
+              <span className="material-symbols-outlined text-xl">school</span>
             </div>
             <div>
               <span className="text-lg font-bold font-serif text-[#004349] tracking-tight block">
-                HandTalk
+                IsyaratPintar
               </span>
               <span className="text-[10px] font-bold text-[#724d00] uppercase tracking-wider block">Jurnal Belajar</span>
             </div>
@@ -118,7 +118,7 @@ export const DashboardLayout = () => {
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
             <Link to="/dashboard" className="font-bold font-serif text-[#004349] text-base underline decoration-[#ffbe4f] decoration-4 underline-offset-4">
-              HandTalk
+              IsyaratPintar
             </Link>
           </div>
 
@@ -147,7 +147,6 @@ export const DashboardLayout = () => {
               <span>{streakCount} Hari Streak</span>
             </div>
 
-            {/* Avatar Profil */}
             <Link 
               to="/dashboard/profile"
               title="Buka Profil"
@@ -158,7 +157,7 @@ export const DashboardLayout = () => {
           </div>
         </header>
 
-        {/* Menu Dropdown Mobile */}
+     
         {mobileMenuOpen && (
           <div className="md:hidden bg-[#faf3e6] border-b-2 border-[#004349] p-4 space-y-2 shadow-[0px_4px_0px_0px_#004349]">
             {navItems.map((item) => {
@@ -190,7 +189,6 @@ export const DashboardLayout = () => {
           </div>
         )}
 
-        {/* Tempat Render Halaman */}
         <main className="p-4 md:p-8 flex-1 bg-[#fff9ee] max-w-4xl w-full mx-auto">
           <Outlet />
         </main>

@@ -1,60 +1,168 @@
+import { supabase } from '../lib/supabaseClient'
+
 export interface QuizQuestion {
   id: string
   category: 'Abjad' | 'Angka' | 'Kata Dasar'
   questionText: string
-  mediaUrl: string // Alamat Public URL dari Supabase Storage
+  mediaUrl: string
   mediaType: 'image' | 'video'
   options: string[]
   correctAnswer: string
 }
 
-// Gantilah [PROJECT-ID] dengan Supabase Project ID kamu
-const SUPABASE_STORAGE_URL = 'https://[PROJECT-ID].supabase.co/storage/v1/object/public/sign-videos'
 
-export const QUIZ_QUESTIONS: QuizQuestion[] = [
+const getStorageUrl = (path: string) => {
+  const { data } = supabase.storage
+    .from('Video and Foto assets')
+    .getPublicUrl(path)
+  
+  return data.publicUrl
+}
+
+
+export const ANGKA_QUESTIONS: QuizQuestion[] = [
   {
-    id: '1',
+    id: 'a1',
+    category: 'Angka',
+    questionText: 'Angka berapa yang dilambangkan oleh isyarat ini?',
+    mediaUrl: getStorageUrl('Foto Assets/1.jpg'),
+    mediaType: 'image',
+    options: ['Angka 1', 'Angka 2', 'Angka 3', 'Angka 4'],
+    correctAnswer: 'Angka 1',
+  },
+  {
+    id: 'a2',
+    category: 'Angka',
+    questionText: 'Angka berapa yang dilambangkan oleh isyarat ini?',
+    mediaUrl: getStorageUrl('Foto Assets/2.jpg'),
+    mediaType: 'image',
+    options: ['Angka 1', 'Angka 2', 'Angka 5', 'Angka 6'],
+    correctAnswer: 'Angka 2',
+  },
+  {
+    id: 'a3',
+    category: 'Angka',
+    questionText: 'Angka berapa yang dilambangkan oleh isyarat ini?',
+    mediaUrl: getStorageUrl('Foto Assets/3.jpg'),
+    mediaType: 'image',
+    options: ['Angka 2', 'Angka 3', 'Angka 4', 'Angka 7'],
+    correctAnswer: 'Angka 3',
+  },
+  {
+    id: 'a4',
+    category: 'Angka',
+    questionText: 'Angka berapa yang dilambangkan oleh isyarat ini?',
+    mediaUrl: getStorageUrl('Foto Assets/4.jpg'),
+    mediaType: 'image',
+    options: ['Angka 3', 'Angka 4', 'Angka 5', 'Angka 8'],
+    correctAnswer: 'Angka 4',
+  },
+  {
+    id: 'a5',
+    category: 'Angka',
+    questionText: 'Angka berapa yang dilambangkan oleh isyarat ini?',
+    mediaUrl: getStorageUrl('Foto Assets/5.jpg'),
+    mediaType: 'image',
+    options: ['Angka 4', 'Angka 5', 'Angka 9', 'Angka 10'],
+    correctAnswer: 'Angka 5',
+  },
+  {
+    id: 'a6',
+    category: 'Angka',
+    questionText: 'Angka berapa yang dilambangkan oleh isyarat ini?',
+    mediaUrl: getStorageUrl('Foto Assets/6.jpg'),
+    mediaType: 'image',
+    options: ['Angka 5', 'Angka 6', 'Angka 7', 'Angka 8'],
+    correctAnswer: 'Angka 6',
+  },
+  {
+    id: 'a7',
+    category: 'Angka',
+    questionText: 'Angka berapa yang dilambangkan oleh isyarat ini?',
+    mediaUrl: getStorageUrl('Foto Assets/7.jpg'),
+    mediaType: 'image',
+    options: ['Angka 6', 'Angka 7', 'Angka 8', 'Angka 9'],
+    correctAnswer: 'Angka 7',
+  },
+  {
+    id: 'a8',
+    category: 'Angka',
+    questionText: 'Angka berapa yang dilambangkan oleh isyarat ini?',
+    mediaUrl: getStorageUrl('Foto Assets/8.jpg'),
+    mediaType: 'image',
+    options: ['Angka 7', 'Angka 8', 'Angka 9', 'Angka 10'],
+    correctAnswer: 'Angka 8',
+  },
+  {
+    id: 'a9',
+    category: 'Angka',
+    questionText: 'Angka berapa yang dilambangkan oleh isyarat ini?',
+    mediaUrl: getStorageUrl('Foto Assets/9.jpg'),
+    mediaType: 'image',
+    options: ['Angka 6', 'Angka 8', 'Angka 9', 'Angka 10'],
+    correctAnswer: 'Angka 9',
+  },
+  {
+    id: 'a10',
+    category: 'Angka',
+    questionText: 'Angka berapa yang dilambangkan oleh isyarat ini?',
+    mediaUrl: getStorageUrl('Foto Assets/10.jpg'),
+    mediaType: 'image',
+    options: ['Angka 5', 'Angka 7', 'Angka 9', 'Angka 10'],
+    correctAnswer: 'Angka 10',
+  },
+]
+
+
+export const ABJAD_QUESTIONS: QuizQuestion[] = [
+  {
+    id: 'b1',
     category: 'Abjad',
     questionText: 'Tebak isyarat abjad di bawah ini!',
-    mediaUrl: `${SUPABASE_STORAGE_URL}/huruf-a.png`, // Bisa .mp4 / .webm / .png
+    mediaUrl: getStorageUrl('Foto Assets/A.jpg'),
     mediaType: 'image',
     options: ['Huruf A', 'Huruf B', 'Huruf C', 'Huruf D'],
     correctAnswer: 'Huruf A',
   },
   {
-    id: '2',
+    id: 'b2',
     category: 'Abjad',
     questionText: 'Tebak isyarat abjad di bawah ini!',
-    mediaUrl: `${SUPABASE_STORAGE_URL}/huruf-b.png`,
+    mediaUrl: getStorageUrl('Foto Assets/B.jpg'),
     mediaType: 'image',
-    options: ['Huruf A', 'Huruf B', 'Huruf E', 'Huruf F'],
+    options: ['Huruf A', 'Huruf B', 'Huruf C', 'Huruf D'],
     correctAnswer: 'Huruf B',
   },
   {
-    id: '3',
-    category: 'Angka',
-    questionText: 'Angka berapa yang dilambangkan isyarat ini?',
-    mediaUrl: `${SUPABASE_STORAGE_URL}/angka-1.mp4`,
-    mediaType: 'video',
-    options: ['Angka 1', 'Angka 2', 'Angka 3', 'Angka 4'],
-    correctAnswer: 'Angka 1',
+    id: 'b3',
+    category: 'Abjad',
+    questionText: 'Tebak isyarat abjad di bawah ini!',
+    mediaUrl: getStorageUrl('Foto Assets/C.jpg'), 
+    mediaType: 'image',
+    options: ['Huruf A', 'Huruf B', 'Huruf C', 'Huruf D'],
+    correctAnswer: 'Huruf C',
   },
   {
-    id: '4',
-    category: 'Angka',
-    questionText: 'Angka berapa yang dilambangkan isyarat ini?',
-    mediaUrl: `${SUPABASE_STORAGE_URL}/angka-2.mp4`,
-    mediaType: 'video',
-    options: ['Angka 1', 'Angka 2', 'Angka 5', 'Angka 10'],
-    correctAnswer: 'Angka 2',
+    id: 'b4',
+    category: 'Abjad',
+    questionText: 'Tebak isyarat abjad di bawah ini!',
+    mediaUrl: getStorageUrl('Foto Assets/D.jpg'),
+    mediaType: 'image',
+    options: ['Huruf A', 'Huruf B', 'Huruf C', 'Huruf D'],
+    correctAnswer: 'Huruf D',
   },
   {
-    id: '5',
-    category: 'Kata Dasar',
-    questionText: 'Gerakan isyarat apakah ini?',
-    mediaUrl: `${SUPABASE_STORAGE_URL}/halo.mp4`,
-    mediaType: 'video',
-    options: ['Halo', 'Terima Kasih', 'Sama-sama', 'Maaf'],
-    correctAnswer: 'Halo',
+    id: 'b5',
+    category: 'Abjad',
+    questionText: 'Tebak isyarat abjad di bawah ini!',
+    mediaUrl: getStorageUrl('Foto Assets/E.jpg'),
+    mediaType: 'image',
+    options: ['Huruf C', 'Huruf D', 'Huruf E', 'Huruf F'],
+    correctAnswer: 'Huruf E',
   },
+]
+
+export const QUIZ_QUESTIONS: QuizQuestion[] = [
+  ...ANGKA_QUESTIONS,
+  ...ABJAD_QUESTIONS,
 ]

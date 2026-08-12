@@ -24,7 +24,16 @@ export const QuizPage = () => {
   const [isQuizFinished, setIsQuizFinished] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
-  // Mulai Kuis Berdasarkan Kategori & Jumlah Soal Pilihan
+  // Reset State Kuis
+  const handleResetQuiz = () => {
+    setQuizStarted(false)
+    setIsQuizFinished(false)
+    setCurrentIndex(0)
+    setScore(0)
+    setSelectedOption(null)
+    setSigns([])
+  }
+
   const startQuiz = (cat: string) => {
     const filtered = cat === 'Semua' 
       ? [...QUIZ_QUESTIONS] 
@@ -35,20 +44,22 @@ export const QuizPage = () => {
       return
     }
 
-    // FIX: Loop/gandakan soal jika target questionCount (5/10) lebih banyak dari data asli
     let pool: QuizQuestion[] = []
+    let loopCount = 0
+
     while (pool.length < questionCount) {
       const shuffledCopy = [...filtered]
         .sort(() => 0.5 - Math.random())
-        .map(q => ({
+        .map((q, idx) => ({
           ...q,
-          // Acak juga pilihan jawabannya biar ga bosan
+          id: `${q.id}-${loopCount}-${idx}`,
           options: [...q.options].sort(() => 0.5 - Math.random())
         }))
+
       pool = [...pool, ...shuffledCopy]
+      loopCount++
     }
 
-    // Potong tepat sesuai questionCount yang dipilih (5 atau 10)
     const finalQuestions = pool.slice(0, questionCount)
 
     setSigns(finalQuestions)
@@ -66,6 +77,7 @@ export const QuizPage = () => {
     const currentSign = signs[currentIndex]
     const isCorrect = option === currentSign.correctAnswer
     const newScore = isCorrect ? score + 1 : score
+
     if (isCorrect) setScore(newScore)
 
     setTimeout(() => {
@@ -125,7 +137,7 @@ export const QuizPage = () => {
           </div>
         </div>
 
-        {/* Card Pilihan Kategori */}
+  
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             { id: 'Abjad', title: 'Kuis Abjad', desc: 'Tes hafalan isyarat A-Z', icon: <Type />, color: 'bg-[#ffbe4f]' },
@@ -152,7 +164,7 @@ export const QuizPage = () => {
     )
   }
 
-  // 2. TAMPILAN RESULT EVALUASI
+
   if (isQuizFinished) {
     const accuracy = Math.round((score / signs.length) * 100)
     const isPassed = accuracy >= 70
@@ -163,8 +175,12 @@ export const QuizPage = () => {
           <Trophy className="w-10 h-10 text-[#724d00]" />
         </div>
         <div>
-          <h2 className="font-serif text-3xl font-bold text-[#004349]">{isPassed ? 'Evaluasi Bagus Sekali!' : 'Coba Lagi & Tingkatkan!'}</h2>
-          <p className="text-xs font-medium text-[#3f484a] mt-1">{isSaving ? 'Menyimpan statistik...' : 'Hasil kuis tersimpan dan streak harianmu aktif!'}</p>
+          <h2 className="font-serif text-3xl font-bold text-[#004349]">
+            {isPassed ? 'Evaluasi Bagus Sekali!' : 'Coba Lagi & Tingkatkan!'}
+          </h2>
+          <p className="text-xs font-medium text-[#3f484a] mt-1">
+            {isSaving ? 'Menyimpan statistik...' : 'Hasil kuis tersimpan dan streak harianmu aktif!'}
+          </p>
         </div>
 
         <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-4 flex items-center justify-between shadow-[3px_3px_0px_0px_#004349]">
@@ -191,15 +207,23 @@ export const QuizPage = () => {
           </div>
           <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-4 shadow-[3px_3px_0px_0px_#004349]">
             <span className="text-[10px] font-bold text-[#3f484a] uppercase block mb-1">Status</span>
-            <span className={`font-serif text-sm font-bold block mt-1 ${isPassed ? 'text-[#004349]' : 'text-[#ba1a1a]'}`}>{isPassed ? 'Sangat Baik' : 'Perlu Latihan'}</span>
+            <span className={`font-serif text-sm font-bold block mt-1 ${isPassed ? 'text-[#004349]' : 'text-[#ba1a1a]'}`}>
+              {isPassed ? 'Sangat Baik' : 'Perlu Latihan'}
+            </span>
           </div>
         </div>
 
         <div className="flex gap-4 pt-2">
-          <button onClick={() => window.location.reload()} className="flex-1 py-3.5 bg-[#fff9ee] border-2 border-[#004349] rounded-xl font-bold text-xs uppercase text-[#004349] shadow-[3px_3px_0px_0px_#004349] flex items-center justify-center gap-2">
+          <button 
+            onClick={handleResetQuiz} 
+            className="flex-1 py-3.5 bg-[#fff9ee] border-2 border-[#004349] rounded-xl font-bold text-xs uppercase text-[#004349] shadow-[3px_3px_0px_0px_#004349] flex items-center justify-center gap-2 hover:bg-[#ffbe4f]/20 transition-all"
+          >
             <RotateCcw className="w-4 h-4" /><span>Kuis Lain</span>
           </button>
-          <Link to="/dashboard" className="flex-1 py-3.5 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl font-bold text-xs uppercase text-[#724d00] shadow-[3px_3px_0px_0px_#004349] flex items-center justify-center gap-2">
+          <Link 
+            to="/dashboard" 
+            className="flex-1 py-3.5 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl font-bold text-xs uppercase text-[#724d00] shadow-[3px_3px_0px_0px_#004349] flex items-center justify-center gap-2 hover:brightness-105 transition-all"
+          >
             <LayoutDashboard className="w-4 h-4" /><span>Dashboard</span>
           </Link>
         </div>
@@ -207,12 +231,13 @@ export const QuizPage = () => {
     )
   }
 
-  // 3. TAMPILAN GAMEPLAY (PEMANGGIL MEDIA)
+
   const currentSign = signs[currentIndex]
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
-        <button onClick={() => window.location.reload()} className="flex items-center gap-2 text-xs font-bold text-[#004349] hover:underline">
+        <button onClick={handleResetQuiz} className="flex items-center gap-2 text-xs font-bold text-[#004349] hover:underline">
           <ArrowLeft size={16} /> Batal & Keluar
         </button>
         <div className="flex items-center gap-2">
@@ -226,37 +251,52 @@ export const QuizPage = () => {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8 items-stretch">
-        {/* Kolom Kiri: Render Media Gambar / Video dari Supabase */}
+
         <div className="flex-1 bg-[#faf3e6] border-2 border-[#004349] rounded-3xl p-6 shadow-[6px_6px_0px_0px_#004349]">
           <div className="flex justify-between items-center mb-4">
             <span className="text-xs font-bold uppercase tracking-widest text-[#3f484a]">
               Soal {currentIndex + 1} dari {signs.length}
             </span>
             <div className="w-36 bg-[#fff9ee] h-2.5 rounded-full border border-[#004349]/30 overflow-hidden">
-              <div className="bg-[#ffbe4f] h-full transition-all duration-300" style={{ width: `${((currentIndex + 1) / signs.length) * 100}%` }} />
+              <div 
+                className="bg-[#ffbe4f] h-full transition-all duration-300" 
+                style={{ width: `${((currentIndex + 1) / signs.length) * 100}%` }} 
+              />
             </div>
           </div>
 
-          <div className="aspect-video bg-[#004349] rounded-2xl overflow-hidden border-2 border-[#004349] shadow-[4px_4px_0px_0px_#004349] flex items-center justify-center p-2">
+          <div className={`aspect-video rounded-2xl overflow-hidden border-2 border-[#004349] shadow-[4px_4px_0px_0px_#004349] flex items-center justify-center p-2 ${
+            currentSign.mediaType === 'video' ? 'bg-[#1e1b14]' : 'bg-[#fff9ee]'
+          }`}>
             {currentSign.mediaType === 'video' ? (
               <video 
                 key={currentSign.mediaUrl} 
                 src={currentSign.mediaUrl} 
-                autoPlay loop muted playsInline 
-                className="w-full h-full object-cover rounded-xl" 
+                autoPlay 
+                loop 
+                muted 
+                playsInline 
+                className="w-full h-full object-contain" 
               />
             ) : (
+              
               <img 
                 key={currentSign.mediaUrl} 
                 src={currentSign.mediaUrl} 
                 alt="Sign Quiz" 
+                crossOrigin="anonymous"
+                referrerPolicy="no-referrer"
                 className="w-full h-full object-contain p-2" 
+                onError={(e) => {
+                  console.error('ERROR: Gambar tidak bisa dibuka dari URL:', currentSign.mediaUrl)
+                  e.currentTarget.src = 'https://placehold.co/600x400/fff9ee/004349?text=Gagal+Muat+Gambar'
+                }}
               />
             )}
           </div>
         </div>
 
-        {/* Kolom Kanan: Pilihan Jawaban */}
+
         <div className="w-full lg:w-[400px] flex flex-col justify-center space-y-6">
           <div className="space-y-1">
             <h2 className="font-serif text-2xl font-bold text-[#004349]">{currentSign.questionText}</h2>
@@ -268,9 +308,13 @@ export const QuizPage = () => {
               const isSelected = selectedOption === option
               const isCorrect = option === currentSign.correctAnswer
               let style = "bg-[#fff9ee] border-[#004349] text-[#004349] hover:bg-[#ffbe4f]/20 shadow-[4px_4px_0px_0px_#004349]"
+
               if (selectedOption) {
-                if (isCorrect) style = "bg-[#ffbe4f] border-[#004349] text-[#724d00] shadow-none translate-x-[2px] translate-y-[2px]"
-                else if (isSelected) style = "bg-[#ffdad2] border-[#ba1a1a] text-[#ba1a1a] shadow-none translate-x-[2px] translate-y-[2px]"
+                if (isCorrect) {
+                  style = "bg-[#ffbe4f] border-[#004349] text-[#724d00] shadow-none translate-x-[2px] translate-y-[2px]"
+                } else if (isSelected) {
+                  style = "bg-[#ffdad2] border-[#ba1a1a] text-[#ba1a1a] shadow-none translate-x-[2px] translate-y-[2px]"
+                }
               }
 
               return (

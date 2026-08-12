@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase'
+import { supabase } from '../lib/supabaseClient'
 
 export interface QuizAttempt {
   id?: string
@@ -25,7 +25,6 @@ export const quizService = {
       throw error
     }
 
-   
     try {
       await quizService.updateUserStreak(userId)
     } catch (streakErr) {
@@ -36,10 +35,11 @@ export const quizService = {
   },
 
   async updateUserStreak(userId: string) {
+    // Format YYYY-MM-DD
     const today = new Date().toLocaleDateString('en-CA')
 
     const { data: profile, error: profileError } = await supabase
-      .from('profiles') 
+      .from('profiles')
       .select('id, streak_count, last_activity_date')
       .eq('id', userId)
       .maybeSingle()
@@ -52,6 +52,7 @@ export const quizService = {
     const lastActivity = profile?.last_activity_date
     let newStreak = profile?.streak_count || 0
 
+    // Jika hari ini sudah beraktivitas, tidak perlu update streak lagi
     if (lastActivity === today) {
       return
     }
@@ -63,10 +64,10 @@ export const quizService = {
     if (lastActivity === yesterday) {
       newStreak += 1
     } else {
-
       newStreak = 1
     }
 
+    // UPDATE TABEL PROFILES (Hanya memperbarui kolom yang dipastikan ada)
     const { error: updateError } = await supabase
       .from('profiles')
       .upsert(
@@ -74,7 +75,7 @@ export const quizService = {
           id: userId,
           streak_count: newStreak,
           last_activity_date: today,
-          updated_at: new Date().toISOString(),
+          // 'updated_at' Dihapus dari payload agar tidak memicu error PGRST204
         },
         { onConflict: 'id' }
       )

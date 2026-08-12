@@ -40,20 +40,23 @@ export const LearnPage = () => {
 
   const categories = ['Semua', 'Abjad', 'Angka', 'Kata Dasar']
 
+  // Filter: hanya tampilkan data yang memiliki file video (.mp4)
   const filteredSigns = signs.filter((sign) => {
     const matchesSearch =
       sign.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
       sign.category.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory =
       selectedCategory === 'Semua' || sign.category === selectedCategory
+    
+    const isVideo = sign.video_url?.toLowerCase().endsWith('.mp4')
 
-    return matchesSearch && matchesCategory
+    return matchesSearch && matchesCategory && isVideo
   })
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-12 text-[#1e1b14] select-none">
       
-
+      {/* Header & Filter */}
       <div className="bg-[#faf3e6] border-2 border-[#004349] rounded-3xl p-6 md:p-8 shadow-[8px_8px_0px_0px_#004349] relative">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-1 text-left">
@@ -108,7 +111,7 @@ export const LearnPage = () => {
       {/* Grid Katalog Isyarat */}
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+          {[1, 2, 3, 4].map((n) => (
             <div
               key={n}
               className="h-56 bg-[#faf3e6] border-2 border-[#004349]/20 rounded-2xl animate-pulse"
@@ -171,7 +174,7 @@ export const LearnPage = () => {
         </div>
       )}
 
-      {/* Modal Detail & Player Media dari Supabase */}
+      {/* Modal Detail & Player Media */}
       {selectedSign && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1e1b14]/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-3xl max-w-md w-full p-6 relative shadow-[10px_10px_0px_0px_#004349] overflow-hidden">
@@ -197,25 +200,17 @@ export const LearnPage = () => {
               </div>
             </div>
 
-            {/* Video / Image Render dari Supabase Storage */}
-            <div className="relative aspect-video bg-[#004349] rounded-2xl overflow-hidden border-2 border-[#004349] shadow-[4px_4px_0px_0px_#004349] mb-5 flex items-center justify-center">
-              {selectedSign.video_url?.endsWith('.mp4') || selectedSign.video_url?.endsWith('.webm') ? (
-                <video
-                  key={selectedSign.video_url}
-                  src={selectedSign.video_url}
-                  controls
-                  autoPlay
-                  loop
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <img
-                  key={selectedSign.video_url}
-                  src={selectedSign.video_url}
-                  alt={selectedSign.label}
-                  className="w-full h-full object-contain p-4 bg-[#fff9ee]"
-                />
-              )}
+            {/* Video Player dengan object-contain agar tidak kepotong */}
+            <div className="relative aspect-video bg-[#1e1b14] rounded-2xl overflow-hidden border-2 border-[#004349] shadow-[4px_4px_0px_0px_#004349] mb-5 flex items-center justify-center">
+              <video
+                key={selectedSign.video_url}
+                src={selectedSign.video_url}
+                controls
+                autoPlay
+                loop
+                playsInline
+                className="w-full h-full object-contain"
+              />
             </div>
 
             <div className="bg-[#faf3e6] border-2 border-[#004349] rounded-2xl p-4 mb-5 shadow-[3px_3px_0px_0px_#004349]">

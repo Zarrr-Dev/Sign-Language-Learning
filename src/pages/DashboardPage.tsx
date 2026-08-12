@@ -11,7 +11,6 @@ export const DashboardPage = () => {
   const [totalSigns, setTotalSigns] = useState(0)
   const [loading, setLoading] = useState(true)
 
-  // State Dinamis untuk Streak
   const [streakCount, setStreakCount] = useState<number>(0)
   const [isStreakActiveToday, setIsStreakActiveToday] = useState<boolean>(false)
 
@@ -35,12 +34,11 @@ export const DashboardPage = () => {
       setHistory(quizHistory || [])
       setTotalSigns(signs ? signs.length : 0)
 
-      // Cek Status Streak Realtime
       if (profile) {
-        const today = new Date().toISOString().split('T')[0]
-        setStreakCount(profile.streak_count || 0)
+        // PERBAIKAN: Gunakan format en-CA (YYYY-MM-DD) yang konsisten dengan quizService
+        const today = new Date().toLocaleDateString('en-CA')
         
-        // Aktif jika aktivitas terakhir dilakukan HARI INI
+        setStreakCount(profile.streak_count || 0)
         setIsStreakActiveToday(profile.last_activity_date === today)
       }
     } catch (err) {
@@ -55,7 +53,7 @@ export const DashboardPage = () => {
   return (
     <div className="space-y-6 max-w-2xl mx-auto pb-6 text-[#1e1b14] select-none">
       
-      {/* Greeting & Streak Section */}
+      {/* HEADER GREETING & BADGE STREAK */}
       <section className="flex justify-between items-end relative pt-2">
         <div>
           <h1 className="font-serif text-2xl font-bold text-[#1e1b14]">
@@ -64,12 +62,12 @@ export const DashboardPage = () => {
           <p className="text-xs text-[#6f797a] mt-1">Siap untuk belajar hari ini?</p>
         </div>
 
-        {/* Dynamic Streak Badge (Abu-abu vs Nyala) */}
+        {/* Badge Streak Dashboard */}
         <div 
           className={`flex flex-col items-center border-2 border-[#004349] px-3 py-1.5 rounded-xl rotate-2 shadow-[2px_2px_0px_0px_#004349] transition-all duration-300 ${
             isStreakActiveToday 
-              ? 'bg-[#ffbe4f]' // Nyala Khas Kuning-Emas
-              : 'bg-[#e2e8f0]' // Abu-abu Mati (Belum Belajar)
+              ? 'bg-[#ffbe4f]' 
+              : 'bg-[#e2e8f0]' 
           }`}
         >
           <span className={`material-symbols-outlined text-2xl transition-colors ${
@@ -85,7 +83,7 @@ export const DashboardPage = () => {
         </div>
       </section>
 
-      {/* Continue Learning / Modul Pilihan Card */}
+      {/* LANJUT BELAJAR BANNER */}
       <section className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-5 shadow-[4px_4px_0px_0px_#004349] relative overflow-hidden">
         <div className="flex items-center gap-2 mb-2">
           <span className="material-symbols-outlined text-[#741a06]">menu_book</span>
@@ -98,8 +96,6 @@ export const DashboardPage = () => {
           <span>Materi Tersedia</span>
           <span className="font-bold text-[#004349]">{totalSigns} Isyarat</span>
         </div>
-
-        {/* Progress Bar Dynamic */}
         <div className="h-3 w-full bg-[#f4ede0] border border-[#004349] rounded-full overflow-hidden p-0.5 mb-4">
           <div 
             className="h-full bg-[#741a06] rounded-full transition-all duration-500" 
@@ -115,9 +111,8 @@ export const DashboardPage = () => {
         </Link>
       </section>
 
-      {/* Quick Action Modules */}
+      {/* GRID MENU SCHEME */}
       <section className="grid grid-cols-2 gap-3">
-
         <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-4 shadow-[4px_4px_0px_0px_#004349] flex flex-col justify-between">
           <div>
             <div className="w-10 h-10 rounded-xl bg-[#f4ede0] border border-[#004349] flex items-center justify-center mb-3 text-[#004349]">
@@ -135,7 +130,6 @@ export const DashboardPage = () => {
           </Link>
         </div>
 
-        {/* Card 2: Kuis */}
         <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-4 shadow-[4px_4px_0px_0px_#004349] flex flex-col justify-between">
           <div>
             <div className="w-10 h-10 rounded-xl bg-[#f4ede0] border border-[#004349] flex items-center justify-center mb-3 text-[#004349]">
@@ -154,7 +148,7 @@ export const DashboardPage = () => {
         </div>
       </section>
 
-
+      {/* RIWAYAT TERAKHIR */}
       <section className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-5 shadow-[4px_4px_0px_0px_#004349] space-y-3">
         <div className="flex items-center justify-between border-b border-[#004349]/20 pb-2">
           <h3 className="font-serif text-base font-bold text-[#004349] flex items-center gap-1.5">

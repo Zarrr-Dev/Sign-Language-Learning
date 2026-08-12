@@ -38,7 +38,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
           className="w-full px-4 py-2.5 pr-11 bg-[#faf3e6] border-2 border-[#004349] rounded-xl text-sm font-medium text-[#1e1b14] placeholder-[#004349]/40 focus:outline-none focus:ring-2 focus:ring-[#ffbe4f] transition-all shadow-[2px_2px_0px_0px_#004349]"
         />
 
-        {/* Tombol Tanda Mata */}
+
         <button
           type="button"
           onClick={togglePasswordVisibility}
