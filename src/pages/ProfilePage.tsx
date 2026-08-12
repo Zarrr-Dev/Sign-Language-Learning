@@ -115,24 +115,16 @@ export const ProfilePage = () => {
         </div>
       </div>
 
-      {/* History Preview Section (Maksimal 5) */}
+      {/* Full History Section */}
       <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-3xl p-6 shadow-[6px_6px_0px_0px_#004349] space-y-4">
         <div className="flex items-center justify-between border-b-2 border-[#004349]/10 pb-3">
           <div>
             <h3 className="font-serif text-lg font-bold text-[#004349] flex items-center gap-2">
               <span className="material-symbols-outlined text-xl">history</span>
-              Riwayat Kuis Terakhir
+              Semua Riwayat Kuis
             </h3>
-            <p className="text-xs text-[#3f484a]">Menampilkan 5 aktivitas kuis terbaru.</p>
+            <p className="text-xs text-[#3f484a]">Menampilkan seluruh aktivitas kuis kamu.</p>
           </div>
-
-          <Link 
-            to="/dashboard/history" 
-            className="px-4 py-2 bg-[#ffbe4f] text-[#724d00] border-2 border-[#004349] rounded-xl font-bold text-xs uppercase tracking-wider shadow-[2px_2px_0px_0px_#004349] hover:bg-[#ffa91a] transition-all flex items-center gap-1"
-          >
-            <span>Kelola Riwayat</span>
-            <span className="material-symbols-outlined text-sm">arrow_forward</span>
-          </Link>
         </div>
 
         {loading ? (
@@ -144,7 +136,8 @@ export const ProfilePage = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {history.slice(0, 5).map((item, idx) => (
+            {/* Hapus .slice(0, 5) untuk menampilkan semuanya */}
+            {history.map((item, idx) => (
               <div
                 key={item.id || idx}
                 className="flex items-center justify-between p-4 bg-[#faf3e6] border-2 border-[#004349] rounded-2xl text-xs shadow-[2px_2px_0px_0px_#004349]"

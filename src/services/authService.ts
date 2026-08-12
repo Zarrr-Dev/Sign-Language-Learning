@@ -2,7 +2,6 @@ import { supabase } from '../lib/supabase'
 
 export const authService = {
   async register(email: string, pass: string, fullName: string) {
-    // 1. Sign Up User ke Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email,
       password: pass,
@@ -14,8 +13,6 @@ export const authService = {
     })
 
     if (error) throw error
-
-    // 2. Jika user berhasil dibuat, pastikan profile terisi di database
     if (data.user) {
       const { error: profileError } = await supabase.from('profiles').upsert([
         {

@@ -6,15 +6,19 @@ export const LandingPage = () => {
   return (
     <div className="bg-[#fff9ee] text-[#1e1b14] dot-grid min-h-screen flex flex-col justify-between font-sans select-none overflow-x-hidden">
       
-      {/* 1. TOP NAVBAR */}
       <header className="w-full max-w-6xl mx-auto px-6 py-5 flex items-center justify-between border-b-2 border-[#004349]/10">
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl flex items-center justify-center font-bold text-[#004349] shadow-[2px_2px_0px_0px_#004349]">
             <span className="material-symbols-outlined text-xl">handshake</span>
           </div>
-          <span className="font-serif font-extrabold text-xl text-[#004349] tracking-tight">
-            HandTalk
-          </span>
+          <div>
+            <span className="font-serif font-extrabold text-xl text-[#004349] tracking-tight block leading-none">
+              SGL Learning
+            </span>
+            <span className="text-[9px] font-bold text-[#724d00] uppercase tracking-wider block mt-0.5">
+              Sign Language Learning
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
@@ -33,22 +37,20 @@ export const LandingPage = () => {
         </div>
       </header>
 
-      {/* 2. HERO SECTION */}
+    
       <main className="w-full max-w-5xl mx-auto px-6 py-12 flex flex-col items-center text-center space-y-12">
+
         
-
-
-        {/* Hero Headline */}
         <div className="max-w-3xl space-y-4">
           <h1 className="font-serif text-4xl sm:text-6xl font-extrabold text-[#004349] leading-tight">
             Belajar Bahasa Isyarat Jadi Lebih <span className="underline decoration-[#ffbe4f] decoration-wavy decoration-4">Hangat & Seru</span>
           </h1>
-          <p className="text-sm sm:text-base text-[#3f484a] max-w-xl mx-auto leading-relaxed">
-            Kuasai gestur jemari abjad dan kata secara terstruktur lewat modul visual, latihan kuis interaktif, dan pencatatan jurnal progress harian.
+          <p className="text-sm sm:text-base text-[#3f484a] max-w-xl mx-auto leading-relaxed font-medium">
+            Kuasai gestur jemari abjad dan kata secara terstruktur lewat modul visual, latihan kuis interaktif, dan pencatatan jurnal progress harian di SGL Learning.
           </p>
         </div>
 
-        {/* Call To Action Buttons */}
+
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
           <Link
             to="/register"
@@ -65,17 +67,17 @@ export const LandingPage = () => {
           </Link>
         </div>
 
-        {/* 3. FEATURE CARDS GRID */}
+        
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full pt-8 text-left">
           
-          {/* Card 1 */}
+          
           <div className="bg-[#faf3e6] border-2 border-[#004349] rounded-2xl p-6 shadow-[5px_5px_0px_0px_#004349] space-y-3 relative overflow-hidden">
             <div className="w-10 h-10 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl flex items-center justify-center text-[#004349] shadow-[2px_2px_0px_0px_#004349]">
               <BookOpen className="w-5 h-5" />
             </div>
             <h3 className="font-serif text-lg font-bold text-[#004349]">Modul Visual Isyarat</h3>
-            <p className="text-xs text-[#3f484a] leading-relaxed">
-              Katalog lengkap abjad dan kosa kata isyarat dilengkapi instruksi ilustrasi visual yang mudah dipahami.
+            <p className="text-xs text-[#3f484a] leading-relaxed font-medium">
+              Katalog lengkap abjad dan kosa kata isyarat BISINDO dilengkapi instruksi ilustrasi visual yang mudah dipahami.
             </p>
           </div>
 
@@ -85,7 +87,7 @@ export const LandingPage = () => {
               <Award className="w-5 h-5" />
             </div>
             <h3 className="font-serif text-lg font-bold text-[#004349]">Kuis & Evaluasi</h3>
-            <p className="text-xs text-[#3f484a] leading-relaxed">
+            <p className="text-xs text-[#3f484a] leading-relaxed font-medium">
               Uji ketepatan hafalan gerakan tanganmu lewat sistem kuis pilihan ganda yang interaktif dan dinamis.
             </p>
           </div>
@@ -96,8 +98,8 @@ export const LandingPage = () => {
               <Flame className="w-5 h-5 text-[#741a06]" />
             </div>
             <h3 className="font-serif text-lg font-bold text-[#004349]">Jurnal & Streak</h3>
-            <p className="text-xs text-[#3f484a] leading-relaxed">
-              Pantau konsistensi belajar harianmu dengan sistem streak otomatis dan histori nilai yang tersimpan di Supabase.
+            <p className="text-xs text-[#3f484a] leading-relaxed font-medium">
+              Pantau konsistensi belajar harianmu dengan sistem streak harian otomatis dan riwayat nilai kuis yang tersimpan aman.
             </p>
           </div>
 
@@ -112,16 +114,16 @@ export const LandingPage = () => {
               </div>
               <div>
                 <h3 className="font-serif text-lg font-bold text-[#004349]">AI Camera Sign Detector</h3>
-                <span className="text-[10px] font-bold text-[#724d00] uppercase tracking-wider">Fitur Masa Depan (In Development)</span>
+                <span className="text-[10px] font-bold text-[#724d00] uppercase tracking-wider block">Fitur Masa Depan (In Development)</span>
               </div>
             </div>
-            <span className="px-3 py-1 bg-[#ffbe4f] border border-[#004349] rounded-full text-xs font-bold text-[#724d00]">
+            <span className="px-3 py-1 bg-[#ffbe4f] border-2 border-[#004349] rounded-full text-xs font-bold text-[#724d00] shadow-[2px_2px_0px_0px_#004349]">
               Machine Learning
             </span>
           </div>
 
-          <p className="text-xs sm:text-sm text-[#3f484a] leading-relaxed mb-4">
-            Kami sedang mengembangkan model Machine Learning berbasis kamera web untuk mendeteksi posisi lekukan jemari tanganmu secara <span className="font-bold text-[#004349]">real-time</span> saat berlatih isyarat!
+          <p className="text-xs sm:text-sm text-[#3f484a] leading-relaxed mb-4 font-medium">
+            SGL Learning sedang mengembangkan model Machine Learning berbasis kamera web untuk mendeteksi posisi lekukan jemari tanganmu secara <span className="font-bold text-[#004349]">real-time</span> saat berlatih isyarat!
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-bold text-[#004349]">
@@ -140,7 +142,7 @@ export const LandingPage = () => {
 
       {/* 5. FOOTER */}
       <footer className="w-full border-t-2 border-[#004349]/10 py-6 text-center text-xs font-bold text-[#3f484a]">
-        HandTalk © {new Date().getFullYear()} • Dibuat untuk Edukasi & Aksesibilitas Bahasa Isyarat
+        SGL Learning © {new Date().getFullYear()} • Dibuat untuk Edukasi & Aksesibilitas Bahasa Isyarat (BISINDO)
       </footer>
 
     </div>

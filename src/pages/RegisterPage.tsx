@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Eye, EyeOff } from 'lucide-react'
 import { authService } from '../services/authService'
 
 export const RegisterPage = () => {
@@ -7,6 +8,7 @@ export const RegisterPage = () => {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,7 +25,7 @@ export const RegisterPage = () => {
   }
 
   return (
-    <div className="bg-[#fff9ee] text-[#1e1b14] dot-grid min-h-screen flex flex-col justify-center items-center px-4 py-8 relative">
+    <div className="bg-[#fff9ee] text-[#1e1b14] dot-grid min-h-screen flex flex-col justify-center items-center px-4 py-8 relative select-none">
       {/* Top bar */}
       <div className="w-full max-w-sm mb-4 flex justify-between items-center">
         <Link to="/" className="inline-flex items-center gap-1 font-bold text-xs uppercase text-[#004349]">
@@ -47,51 +49,72 @@ export const RegisterPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#004349] mb-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#004349] mb-1.5" htmlFor="fullName">
               Nama Lengkap
             </label>
             <input
+              id="fullName"
               type="text"
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Siti Rahma"
-              className="w-full bg-[#fff9ee] border-2 border-[#004349] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#004349]"
+              className="w-full bg-[#fff9ee] border-2 border-[#004349] rounded-xl px-3.5 py-2.5 text-sm font-medium text-[#1e1b14] focus:outline-none focus:ring-2 focus:ring-[#ffbe4f]"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#004349] mb-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#004349] mb-1.5" htmlFor="email">
               Alamat Email
             </label>
             <input
+              id="email"
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="nama@email.com"
-              className="w-full bg-[#fff9ee] border-2 border-[#004349] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#004349]"
+              className="w-full bg-[#fff9ee] border-2 border-[#004349] rounded-xl px-3.5 py-2.5 text-sm font-medium text-[#1e1b14] focus:outline-none focus:ring-2 focus:ring-[#ffbe4f]"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#004349] mb-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#004349] mb-1.5" htmlFor="password">
               Kata Sandi
             </label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Minimal 6 karakter"
-              className="w-full bg-[#fff9ee] border-2 border-[#004349] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#004349]"
-            />
+
+            {/* Input Wrapper dengan Tombol Mata */}
+            <div className="relative flex items-center">
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Minimal 6 karakter"
+                className="w-full bg-[#fff9ee] border-2 border-[#004349] rounded-xl pl-3.5 pr-11 py-2.5 text-sm font-medium text-[#1e1b14] focus:outline-none focus:ring-2 focus:ring-[#ffbe4f]"
+              />
+
+              {/* Tombol Toggle Mata */}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                className="absolute right-3 p-1 text-[#004349]/70 hover:text-[#004349] focus:outline-none transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#ffbe4f] text-[#724d00] font-bold text-xs uppercase tracking-wider py-3.5 px-4 rounded-xl border-2 border-[#004349] shadow-[4px_4px_0px_0px_#004349] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2 mt-6"
+            className="w-full bg-[#ffbe4f] text-[#724d00] font-bold text-xs uppercase tracking-wider py-3.5 px-4 rounded-xl border-2 border-[#004349] shadow-[4px_4px_0px_0px_#004349] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2 mt-6 disabled:opacity-50"
           >
             <span>{loading ? 'Mendaftarkan...' : 'Daftar Sekarang'}</span>
             <span className="material-symbols-outlined text-base">arrow_forward</span>

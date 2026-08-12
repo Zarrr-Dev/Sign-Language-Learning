@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom'
 import { 
   LayoutDashboard, 
@@ -12,12 +12,35 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { authService } from '../services/authService'
+import { userService } from '../services/userService'
 
 export const DashboardLayout = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  // State Dinamis untuk Streak di Header
+  const [streakCount, setStreakCount] = useState<number>(0)
+  const [isStreakActiveToday, setIsStreakActiveToday] = useState<boolean>(false)
+
+  // 🔥 PERBAIKAN DI SINI: Tarik data profil untuk cek streak setiap kali rute (halaman) berubah
+  useEffect(() => {
+    if (user) {
+      userService.getUserProfile(user.id)
+        .then(profile => {
+          if (profile) {
+            setStreakCount(profile.streak_count || 0)
+            
+            // Menggunakan toLocaleDateString('en-CA') agar format YYYY-MM-DD sesuai dengan zona waktu lokal (WIB/Indonesia)
+            const today = new Date().toLocaleDateString('en-CA')
+            
+            setIsStreakActiveToday(profile.last_activity_date === today)
+          }
+        })
+        .catch(err => console.error('Gagal memuat streak di layout:', err))
+    }
+  }, [user, location.pathname]) // <-- Menambahkan location.pathname agar state tidak basi saat pindah halaman
 
   const handleLogout = async () => {
     try {
@@ -101,18 +124,30 @@ export const DashboardLayout = () => {
 
           <div className="hidden md:block">
             <h2 className="text-sm font-bold text-[#004349]">
-    Selamat datang kembali, <span className="underline decoration-[#ffbe4f] decoration-4">{userName}</span>! 👋
-  </h2>
-</div>
+              Selamat datang kembali, <span className="underline decoration-[#ffbe4f] decoration-4">{userName}</span>! 👋
+            </h2>
+          </div>
 
           {/* Kanan: Streak & Profil Link */}
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#faf3e6] border-2 border-[#004349] text-[#724d00] text-xs font-bold shadow-[2px_2px_0px_0px_#004349]">
-              <Flame className="w-4 h-4 fill-[#741a06] text-[#741a06]" />
-              <span>3 Hari Streak</span>
+            
+            {/* Dynamic Streak Badge */}
+            <div 
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-xl border-2 border-[#004349] text-xs font-bold shadow-[2px_2px_0px_0px_#004349] transition-all duration-300 ${
+                isStreakActiveToday 
+                  ? 'bg-[#ffbe4f] text-[#724d00]' // Nyala
+                  : 'bg-[#e2e8f0] text-[#64748b]' // Mati / Belum belajar hari ini
+              }`}
+            >
+              <Flame 
+                className={`w-4 h-4 transition-colors ${
+                  isStreakActiveToday ? 'fill-[#741a06] text-[#741a06]' : 'fill-[#94a3b8] text-[#94a3b8]'
+                }`} 
+              />
+              <span>{streakCount} Hari Streak</span>
             </div>
 
-            {/* Avatar Profil -> Redirect ke Halaman Profile */}
+            {/* Avatar Profil */}
             <Link 
               to="/dashboard/profile"
               title="Buka Profil"

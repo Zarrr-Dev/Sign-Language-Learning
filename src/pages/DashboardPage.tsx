@@ -117,7 +117,7 @@ export const DashboardPage = () => {
 
       {/* Quick Action Modules */}
       <section className="grid grid-cols-2 gap-3">
-        {/* Card 1: Belajar */}
+
         <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-4 shadow-[4px_4px_0px_0px_#004349] flex flex-col justify-between">
           <div>
             <div className="w-10 h-10 rounded-xl bg-[#f4ede0] border border-[#004349] flex items-center justify-center mb-3 text-[#004349]">
@@ -154,7 +154,7 @@ export const DashboardPage = () => {
         </div>
       </section>
 
-      {/* Riwayat Kuis */}
+
       <section className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-5 shadow-[4px_4px_0px_0px_#004349] space-y-3">
         <div className="flex items-center justify-between border-b border-[#004349]/20 pb-2">
           <h3 className="font-serif text-base font-bold text-[#004349] flex items-center gap-1.5">
