@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { quizService, type QuizAttempt } from '../services/quizService'
@@ -35,7 +35,7 @@ export const DashboardPage = () => {
       setTotalSigns(signs ? signs.length : 0)
 
       if (profile) {
-        // PERBAIKAN: Gunakan format en-CA (YYYY-MM-DD) yang konsisten dengan quizService
+        // Format YYYY-MM-DD lokal
         const today = new Date().toLocaleDateString('en-CA')
         
         setStreakCount(profile.streak_count || 0)

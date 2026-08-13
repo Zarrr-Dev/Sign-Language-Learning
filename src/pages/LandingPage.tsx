@@ -1,6 +1,5 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
-import { Sparkles, BookOpen, Award, Flame, Camera, ArrowRight, CheckCircle2 } from 'lucide-react'
+import { BookOpen, Award, Flame, Camera, ArrowRight, CheckCircle2 } from 'lucide-react'
 
 export const LandingPage = () => {
   return (
@@ -37,10 +36,8 @@ export const LandingPage = () => {
         </div>
       </header>
 
-    
       <main className="w-full max-w-5xl mx-auto px-6 py-12 flex flex-col items-center text-center space-y-12">
 
-        
         <div className="max-w-3xl space-y-4">
           <h1 className="font-serif text-4xl sm:text-6xl font-extrabold text-[#004349] leading-tight">
             Belajar Bahasa Isyarat Jadi Lebih <span className="underline decoration-[#ffbe4f] decoration-wavy decoration-4">Hangat & Seru</span>
@@ -49,7 +46,6 @@ export const LandingPage = () => {
             Kuasai gestur jemari abjad dan kata secara terstruktur lewat modul visual, latihan kuis interaktif, dan pencatatan jurnal progress harian di SGL Learning.
           </p>
         </div>
-
 
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
           <Link
@@ -67,9 +63,7 @@ export const LandingPage = () => {
           </Link>
         </div>
 
-        
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full pt-8 text-left">
-          
           
           <div className="bg-[#faf3e6] border-2 border-[#004349] rounded-2xl p-6 shadow-[5px_5px_0px_0px_#004349] space-y-3 relative overflow-hidden">
             <div className="w-10 h-10 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl flex items-center justify-center text-[#004349] shadow-[2px_2px_0px_0px_#004349]">

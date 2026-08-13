@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { quizService } from '../services/quizService'
@@ -137,7 +137,6 @@ export const QuizPage = () => {
           </div>
         </div>
 
-  
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             { id: 'Abjad', title: 'Kuis Abjad', desc: 'Tes hafalan isyarat A-Z', icon: <Type />, color: 'bg-[#ffbe4f]' },
@@ -164,7 +163,7 @@ export const QuizPage = () => {
     )
   }
 
-
+  // 2. TAMPILAN RESULT EVALUASI
   if (isQuizFinished) {
     const accuracy = Math.round((score / signs.length) * 100)
     const isPassed = accuracy >= 70
@@ -231,7 +230,7 @@ export const QuizPage = () => {
     )
   }
 
-
+  // 3. TAMPILAN GAMEPLAY
   const currentSign = signs[currentIndex]
 
   return (
@@ -279,7 +278,6 @@ export const QuizPage = () => {
                 className="w-full h-full object-contain" 
               />
             ) : (
-              
               <img 
                 key={currentSign.mediaUrl} 
                 src={currentSign.mediaUrl} 
@@ -295,7 +293,6 @@ export const QuizPage = () => {
             )}
           </div>
         </div>
-
 
         <div className="w-full lg:w-[400px] flex flex-col justify-center space-y-6">
           <div className="space-y-1">

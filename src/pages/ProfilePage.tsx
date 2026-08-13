@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { authService } from '../services/authService'
 import { quizService, type QuizAttempt } from '../services/quizService'
@@ -136,7 +136,6 @@ export const ProfilePage = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {/* Hapus .slice(0, 5) untuk menampilkan semuanya */}
             {history.map((item, idx) => (
               <div
                 key={item.id || idx}

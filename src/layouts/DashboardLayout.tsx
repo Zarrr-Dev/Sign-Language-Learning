@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom'
 import { 
   LayoutDashboard, 
@@ -157,7 +157,6 @@ export const DashboardLayout = () => {
           </div>
         </header>
 
-     
         {mobileMenuOpen && (
           <div className="md:hidden bg-[#faf3e6] border-b-2 border-[#004349] p-4 space-y-2 shadow-[0px_4px_0px_0px_#004349]">
             {navItems.map((item) => {
