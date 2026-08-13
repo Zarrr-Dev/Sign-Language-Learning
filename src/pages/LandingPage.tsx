@@ -1,20 +1,23 @@
 import { Link } from 'react-router-dom'
-import { BookOpen, Award, Flame, Camera, ArrowRight, CheckCircle2 } from 'lucide-react'
+import { BookOpen, Award, Flame, Camera, ArrowRight, CheckCircle2, Handshake } from 'lucide-react'
 
 export const LandingPage = () => {
   return (
     <div className="bg-[#fff9ee] text-[#1e1b14] dot-grid min-h-screen flex flex-col justify-between font-sans select-none overflow-x-hidden">
       
+      {/* HEADER NAVBAR */}
       <header className="w-full max-w-6xl mx-auto px-6 py-5 flex items-center justify-between border-b-2 border-[#004349]/10">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl flex items-center justify-center font-bold text-[#004349] shadow-[2px_2px_0px_0px_#004349]">
-            <span className="material-symbols-outlined text-xl">handshake</span>
+        
+        {/* LOGO & BRAND - Diberi notranslate & Lucide Icon agar bebas dari bug terjemahan */}
+        <div className="flex items-center gap-3 notranslate" translate="no">
+          <div className="w-9 h-9 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl flex items-center justify-center font-bold text-[#004349] shadow-[2px_2px_0px_0px_#004349] shrink-0">
+            <Handshake className="w-5 h-5 text-[#004349]" />
           </div>
           <div>
-            <span className="font-serif font-extrabold text-xl text-[#004349] tracking-tight block leading-none">
+            <span className="font-serif font-extrabold text-xl text-[#004349] tracking-tight block leading-none notranslate" translate="no">
               SGL Learning
             </span>
-            <span className="text-[9px] font-bold text-[#724d00] uppercase tracking-wider block mt-0.5">
+            <span className="text-[9px] font-bold text-[#724d00] uppercase tracking-wider block mt-0.5 notranslate" translate="no">
               Sign Language Learning
             </span>
           </div>
@@ -36,6 +39,7 @@ export const LandingPage = () => {
         </div>
       </header>
 
+      {/* MAIN CONTENT */}
       <main className="w-full max-w-5xl mx-auto px-6 py-12 flex flex-col items-center text-center space-y-12">
 
         <div className="max-w-3xl space-y-4">
@@ -75,7 +79,6 @@ export const LandingPage = () => {
             </p>
           </div>
 
-          {/* Card 2 */}
           <div className="bg-[#faf3e6] border-2 border-[#004349] rounded-2xl p-6 shadow-[5px_5px_0px_0px_#004349] space-y-3 relative overflow-hidden">
             <div className="w-10 h-10 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl flex items-center justify-center text-[#004349] shadow-[2px_2px_0px_0px_#004349]">
               <Award className="w-5 h-5" />
@@ -86,7 +89,6 @@ export const LandingPage = () => {
             </p>
           </div>
 
-          {/* Card 3 */}
           <div className="bg-[#faf3e6] border-2 border-[#004349] rounded-2xl p-6 shadow-[5px_5px_0px_0px_#004349] space-y-3 relative overflow-hidden">
             <div className="w-10 h-10 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl flex items-center justify-center text-[#004349] shadow-[2px_2px_0px_0px_#004349]">
               <Flame className="w-5 h-5 text-[#741a06]" />
@@ -99,7 +101,7 @@ export const LandingPage = () => {
 
         </div>
 
-        {/* 4. AI FEATURE SHOWCASE (COMING SOON) */}
+        {/* AI FEATURE SHOWCASE */}
         <div className="w-full bg-[#faf3e6] border-2 border-[#004349] rounded-3xl p-6 sm:p-8 shadow-[6px_6px_0px_0px_#004349] text-left relative overflow-hidden">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b-2 border-[#004349]/20 pb-4 mb-4">
             <div className="flex items-center gap-3">
@@ -134,7 +136,7 @@ export const LandingPage = () => {
 
       </main>
 
-      {/* 5. FOOTER */}
+
       <footer className="w-full border-t-2 border-[#004349]/10 py-6 text-center text-xs font-bold text-[#3f484a]">
         SGL Learning © {new Date().getFullYear()} • Dibuat untuk Edukasi & Aksesibilitas Bahasa Isyarat (BISINDO)
       </footer>

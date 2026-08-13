@@ -32,7 +32,6 @@ export const DashboardLayout = () => {
           if (profile) {
             setStreakCount(profile.streak_count || 0)
             
-            // Format YYYY-MM-DD lokal (WIB/Indonesia)
             const today = new Date().toLocaleDateString('en-CA')
             
             setIsStreakActiveToday(profile.last_activity_date === today)
@@ -64,23 +63,21 @@ export const DashboardLayout = () => {
   return (
     <div className="min-h-screen bg-[#fff9ee] text-[#1e1b14] flex flex-col md:flex-row font-sans dot-grid">
       
-      {/* 1. SIDEBAR DESKTOP */}
+    
       <aside className="hidden md:flex flex-col w-64 bg-[#faf3e6] border-r-2 border-[#004349] p-5 h-screen sticky top-0 z-30 justify-between shadow-[4px_0px_0px_0px_#004349]">
         <div>
-          {/* Logo & Brand Aplikasi */}
-          <Link to="/dashboard" className="flex items-center gap-3 px-2 py-3 mb-6 border-b-2 border-[#004349]/20 pb-4">
-            <div className="w-9 h-9 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl flex items-center justify-center font-bold text-[#004349] shadow-[2px_2px_0px_0px_#004349]">
-              <span className="material-symbols-outlined text-xl">school</span>
-            </div>
-            <div>
-              <span className="text-lg font-bold font-serif text-[#004349] tracking-tight block">
-                IsyaratPintar
-              </span>
-              <span className="text-[10px] font-bold text-[#724d00] uppercase tracking-wider block">Jurnal Belajar</span>
-            </div>
-          </Link>
+          
+          <Link to="/" className="flex items-center gap-2 notranslate" translate="no">
+          <div className="w-10 h-10 rounded-2xl bg-[#ffbe4f] border-2 border-[#004349] flex items-center justify-center font-bold text-[#004349] shadow-[2px_2px_0px_0px_#004349] shrink-0">
 
-          {/* Menu Sidebar */}
+            <span className="material-symbols-outlined text-2xl notranslate" translate="no">
+              </span>
+              </div>
+              <span className="font-serif text-xl font-black text-[#004349] tracking-tight notranslate" translate="no">
+                SGL Learning
+                </span>
+                </Link>
+
           <nav className="space-y-2">
             {navItems.map((item) => {
               const Icon = item.icon
