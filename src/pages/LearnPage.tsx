@@ -40,7 +40,6 @@ export const LearnPage = () => {
 
   const categories = ['Semua', 'Abjad', 'Angka', 'Kata Dasar']
 
-  // Filter: hanya tampilkan data yang memiliki file video (.mp4)
   const filteredSigns = signs.filter((sign) => {
     const matchesSearch =
       sign.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -56,24 +55,23 @@ export const LearnPage = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-12 text-[#1e1b14] select-none">
       
-      {/* Header & Filter */}
       <div className="bg-[#faf3e6] border-2 border-[#004349] rounded-3xl p-6 md:p-8 shadow-[8px_8px_0px_0px_#004349] relative">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-1 text-left">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffbe4f] border border-[#004349] text-xs font-bold text-[#724d00] shadow-[2px_2px_0px_0px_#004349]">
-              <span className="material-symbols-outlined text-sm">auto_stories</span>
-              Katalog Isyarat Supabase
+              <span className="material-symbols-outlined text-sm notranslate"translate="no">auto_stories</span>
+              Kumpulan Isyarat
             </span>
             <h1 className="font-serif text-3xl font-extrabold text-[#004349] pt-1">
               Modul Pembelajaran
             </h1>
             <p className="text-xs md:text-sm text-[#3f484a] max-w-xl">
-              Eksplorasi materi isyarat langsung dari database. Setiap kali kamu belajar, streak harianmu otomatis terhubung!
+              Eksplorasi materi isyarat langsung dari database. Setiap kali kamu belajar, streak harianmu otomatis aktif!
             </p>
           </div>
 
           <div className="relative w-full md:w-80 shrink-0">
-            <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#004349] text-xl">
+            <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#004349] text-xl notranslate"translate="no">
               search
             </span>
             <input
@@ -86,10 +84,9 @@ export const LearnPage = () => {
           </div>
         </div>
 
-        {/* Filter Pills */}
         <div className="flex items-center gap-2.5 overflow-x-auto pt-6 border-t border-[#004349]/15 mt-6">
           <span className="text-xs font-bold text-[#004349] shrink-0 mr-1 flex items-center gap-1">
-            <span className="material-symbols-outlined text-sm">filter_alt</span>
+            <span className="material-symbols-outlined text-sm notranslate"translate="no">filter_alt</span>
             Filter:
           </span>
           {categories.map((cat) => (
@@ -108,7 +105,6 @@ export const LearnPage = () => {
         </div>
       </div>
 
-      {/* Grid Katalog Isyarat */}
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
           {[1, 2, 3, 4].map((n) => (
@@ -120,7 +116,7 @@ export const LearnPage = () => {
         </div>
       ) : filteredSigns.length === 0 ? (
         <div className="bg-[#faf3e6] border-2 border-[#004349] rounded-3xl p-12 text-center text-[#3f484a] shadow-[6px_6px_0px_0px_#004349]">
-          <span className="material-symbols-outlined text-5xl text-[#004349] mb-2">search_off</span>
+          <span className="material-symbols-outlined text-5xl text-[#004349] mb-2 notranslate"translate="no">search_off</span>
           <h3 className="font-serif text-lg font-bold text-[#004349]">Materi Tidak Ditemukan</h3>
           <p className="text-xs mt-1">Coba gunakan kata kunci lain atau ubah filter kategori.</p>
         </div>
@@ -152,7 +148,7 @@ export const LearnPage = () => {
                     }`}
                     title={isMastered ? 'Tandai Belum Dikuasai' : 'Tandai Dikuasai'}
                   >
-                    <span className="material-symbols-outlined text-base">
+                    <span className="material-symbols-outlined text-base notranslate"translate="no">
                       {isMastered ? 'check_circle' : 'circle'}
                     </span>
                   </button>
@@ -165,7 +161,7 @@ export const LearnPage = () => {
                 </div>
 
                 <div className="flex items-center justify-center gap-1.5 py-1.5 px-3 bg-[#faf3e6] border border-[#004349] rounded-xl text-[10px] font-bold text-[#004349] uppercase tracking-wider group-hover:bg-[#ffbe4f] transition-colors">
-                  <span className="material-symbols-outlined text-sm">play_circle</span>
+                  <span className="material-symbols-outlined text-sm notranslate"translate="no">play_circle</span>
                   <span>Putar Video</span>
                 </div>
               </div>
@@ -174,7 +170,6 @@ export const LearnPage = () => {
         </div>
       )}
 
-      {/* Modal Detail & Player Media */}
       {selectedSign && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1e1b14]/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-3xl max-w-md w-full p-6 relative shadow-[10px_10px_0px_0px_#004349] overflow-hidden">
@@ -183,12 +178,12 @@ export const LearnPage = () => {
               onClick={() => setSelectedSign(null)}
               className="absolute top-4 right-4 w-9 h-9 bg-[#faf3e6] border-2 border-[#004349] rounded-full flex items-center justify-center text-[#004349] hover:bg-[#ffbe4f] shadow-[2px_2px_0px_0px_#004349] transition-all z-10"
             >
-              <span className="material-symbols-outlined text-xl">close</span>
+              <span className="material-symbols-outlined text-xl notranslate"translate="no">close</span>
             </button>
 
             <div className="flex items-center gap-3 mb-4 pr-10">
               <div className="w-10 h-10 bg-[#ffbe4f] border-2 border-[#004349] rounded-xl flex items-center justify-center text-[#004349] shadow-[2px_2px_0px_0px_#004349] shrink-0">
-                <span className="material-symbols-outlined text-xl">videocam</span>
+                <span className="material-symbols-outlined text-xl notranslate"translate="no">videocam</span>
               </div>
               <div>
                 <h2 className="font-serif text-xl font-bold text-[#004349]">
@@ -200,7 +195,6 @@ export const LearnPage = () => {
               </div>
             </div>
 
-            {/* Video Player dengan object-contain agar tidak kepotong */}
             <div className="relative aspect-video bg-[#1e1b14] rounded-2xl overflow-hidden border-2 border-[#004349] shadow-[4px_4px_0px_0px_#004349] mb-5 flex items-center justify-center">
               <video
                 key={selectedSign.video_url}
@@ -219,7 +213,7 @@ export const LearnPage = () => {
               </h4>
               <p className="text-xs text-[#3f484a] leading-relaxed">
                 {selectedSign.description ||
-                  'Perhatikan bentuk jari, posisi telapak tangan, dan arah gerakan dengan saksama.'}
+                  'Perhatikan bentuk jari, posisi telapak tangan, dan arah gerakan dengan benar.'}
               </p>
             </div>
 
@@ -233,7 +227,7 @@ export const LearnPage = () => {
               }}
               className="w-full bg-[#ffbe4f] text-[#724d00] font-bold text-xs uppercase tracking-wider py-3.5 px-4 rounded-2xl border-2 border-[#004349] shadow-[4px_4px_0px_0px_#004349] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2"
             >
-              <span className="material-symbols-outlined text-lg">check_circle</span>
+              <span className="material-symbols-outlined text-lg notranslate" translate="no">check_circle</span>
               <span>Selesaikan Pelajaran Ini</span>
             </button>
 

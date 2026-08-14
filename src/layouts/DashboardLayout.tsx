@@ -20,11 +20,10 @@ export const DashboardLayout = () => {
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  // State Dinamis untuk Streak di Header
   const [streakCount, setStreakCount] = useState<number>(0)
   const [isStreakActiveToday, setIsStreakActiveToday] = useState<boolean>(false)
 
-  // Tarik data profil untuk cek streak setiap kali rute (halaman) berubah
+
   useEffect(() => {
     if (user) {
       userService.getUserProfile(user.id)
@@ -37,7 +36,7 @@ export const DashboardLayout = () => {
             setIsStreakActiveToday(profile.last_activity_date === today)
           }
         })
-        .catch(err => console.error('Gagal memuat streak di layout:', err))
+        .catch(err => console.error('Gagal memuat streak:', err))
     }
   }, [user, location.pathname])
 
@@ -71,6 +70,7 @@ export const DashboardLayout = () => {
           <div className="w-10 h-10 rounded-2xl bg-[#ffbe4f] border-2 border-[#004349] flex items-center justify-center font-bold text-[#004349] shadow-[2px_2px_0px_0px_#004349] shrink-0">
 
             <span className="material-symbols-outlined text-2xl notranslate" translate="no">
+              front_hand
               </span>
               </div>
               <span className="font-serif text-xl font-black text-[#004349] tracking-tight notranslate" translate="no">
@@ -101,12 +101,9 @@ export const DashboardLayout = () => {
         </div>
       </aside>
 
-      {/* 2. AREA UTAMA */}
       <div className="flex-1 flex flex-col min-w-0">
-        
-        {/* Header Atas */}
+
         <header className="h-16 bg-[#fff9ee] border-b-2 border-[#004349] px-6 flex items-center justify-between sticky top-0 z-20 shadow-[0px_4px_0px_0px_#004349]">
-          {/* Tombol Menu Mobile */}
           <div className="flex items-center gap-3 md:hidden">
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -114,26 +111,29 @@ export const DashboardLayout = () => {
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-            <Link to="/dashboard" className="font-bold font-serif text-[#004349] text-base underline decoration-[#ffbe4f] decoration-4 underline-offset-4">
-              IsyaratPintar
-            </Link>
+            <Link 
+            to="/dashboard/profile"
+            title="Buka Profil"
+            className="w-9 h-9 rounded-full bg-[#ffbe4f] border-2 border-[#004349] flex items-center justify-center text-xs font-bold text-[#724d00] shadow-[2px_2px_0px_0px_#004349] hover:translate-x-[1px] hover:translate-y-[1px] transition-all overflow-hidden shrink-0 notranslate"
+            translate="no"
+            >
+              {firstLetter}
+              </Link>
           </div>
 
           <div className="hidden md:block">
             <h2 className="text-sm font-bold text-[#004349]">
-              Selamat datang kembali, <span className="underline decoration-[#ffbe4f] decoration-4">{userName}</span>! 👋
+              Selamat datang kembali, <span className="underline decoration-[#ffbe4f] decoration-4">{userName}</span>👋
             </h2>
           </div>
 
-          {/* Kanan: Streak & Profil Link */}
           <div className="flex items-center gap-3">
             
-            {/* Dynamic Streak Badge */}
             <div 
               className={`flex items-center gap-1.5 px-3 py-1 rounded-xl border-2 border-[#004349] text-xs font-bold shadow-[2px_2px_0px_0px_#004349] transition-all duration-300 ${
                 isStreakActiveToday 
-                  ? 'bg-[#ffbe4f] text-[#724d00]' // Nyala
-                  : 'bg-[#e2e8f0] text-[#64748b]' // Mati / Belum belajar hari ini
+                  ? 'bg-[#ffbe4f] text-[#724d00]' 
+                  : 'bg-[#e2e8f0] text-[#64748b]'
               }`}
             >
               <Flame 
@@ -141,13 +141,13 @@ export const DashboardLayout = () => {
                   isStreakActiveToday ? 'fill-[#741a06] text-[#741a06]' : 'fill-[#94a3b8] text-[#94a3b8]'
                 }`} 
               />
-              <span>{streakCount} Hari Streak</span>
+              <span>{streakCount} Hari</span>
             </div>
 
             <Link 
               to="/dashboard/profile"
               title="Buka Profil"
-              className="w-9 h-9 rounded-full bg-[#ffbe4f] border-2 border-[#004349] flex items-center justify-center text-xs font-bold text-[#724d00] shadow-[2px_2px_0px_0px_#004349] hover:translate-x-[1px] hover:translate-y-[1px] transition-all overflow-hidden shrink-0"
+              className="w-9 h-9 rounded-full bg-[#ffbe4f] border-2 border-[#004349] flex items-center justify-center text-xs font-bold text-[#724d00] shadow-[2px_2px_0px_0px_#004349] hover:translate-x-[1px] hover:translate-y-[1px] transition-all overflow-hidden shrink-0 notranslate" translate="no"
             >
               {firstLetter}
             </Link>
@@ -180,7 +180,7 @@ export const DashboardLayout = () => {
               className="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-white bg-[#ba1a1a] border-2 border-[#004349] rounded-xl w-full shadow-[2px_2px_0px_0px_#004349]"
             >
               <LogOut className="w-4 h-4" />
-              Keluar Sesi
+              Keluar
             </button>
           </div>
         )}

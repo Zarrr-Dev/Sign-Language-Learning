@@ -24,7 +24,7 @@ export const ProfilePage = () => {
       const data = await quizService.getUserQuizHistory(user!.id)
       setHistory(data)
     } catch (err) {
-      console.error('Error fetching user quiz history:', err)
+      console.error('Error fetching history', err)
     } finally {
       setLoading(false)
     }
@@ -47,7 +47,6 @@ export const ProfilePage = () => {
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-12 text-[#1e1b14] select-none">
       
-      {/* Header Profile Banner (Luas) */}
       <div className="bg-[#faf3e6] border-2 border-[#004349] rounded-3xl p-6 md:p-8 shadow-[8px_8px_0px_0px_#004349] flex flex-col md:flex-row items-center justify-between gap-6 relative">
         <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
           <div className="w-24 h-24 rounded-full bg-[#ffbe4f] border-2 border-[#004349] flex items-center justify-center text-4xl font-bold font-serif text-[#724d00] shadow-[4px_4px_0px_0px_#004349] shrink-0">
@@ -59,7 +58,7 @@ export const ProfilePage = () => {
               Pelajar Aktif
             </span>
             <h1 className="font-serif text-2xl md:text-3xl font-extrabold text-[#004349]">
-              {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Pengguna HandTalk'}
+              {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Pengguna SGL Learning'}
             </h1>
             <p className="text-xs text-[#3f484a] font-medium">
               {user?.email}
@@ -71,16 +70,15 @@ export const ProfilePage = () => {
           onClick={handleLogout}
           className="px-5 py-3 bg-[#ba1a1a] text-white border-2 border-[#004349] rounded-2xl font-bold text-xs uppercase tracking-wider shadow-[4px_4px_0px_0px_#004349] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center gap-2 self-center md:self-auto"
         >
-          <span className="material-symbols-outlined text-base">logout</span>
-          <span>Keluar Sesi</span>
+          <span className="material-symbols-outlined text-base notranslate"translate="no">logout</span>
+          <span>Keluar</span>
         </button>
       </div>
 
-      {/* Stats Cards Section */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-5 shadow-[5px_5px_0px_0px_#004349] flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-[#ffbe4f] border border-[#004349] flex items-center justify-center text-[#004349]">
-            <span className="material-symbols-outlined text-2xl">quiz</span>
+            <span className="material-symbols-outlined text-2xl notranslate" translate="no">quiz</span>
           </div>
           <div>
             <span className="text-[10px] font-bold uppercase tracking-wider text-[#3f484a] block">
@@ -92,7 +90,7 @@ export const ProfilePage = () => {
 
         <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-5 shadow-[5px_5px_0px_0px_#004349] flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-[#ffbe4f] border border-[#004349] flex items-center justify-center text-[#004349]">
-            <span className="material-symbols-outlined text-2xl">check_circle</span>
+            <span className="material-symbols-outlined text-2xl notranslate"translate="no">check_circle</span>
           </div>
           <div>
             <span className="text-[10px] font-bold uppercase tracking-wider text-[#3f484a] block">
@@ -104,7 +102,7 @@ export const ProfilePage = () => {
 
         <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-5 shadow-[5px_5px_0px_0px_#004349] flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-[#ffbe4f] border border-[#004349] flex items-center justify-center text-[#004349]">
-            <span className="material-symbols-outlined text-2xl">verified</span>
+            <span className="material-symbols-outlined text-2xl notranslate"translate="no">verified</span>
           </div>
           <div>
             <span className="text-[10px] font-bold uppercase tracking-wider text-[#3f484a] block">
@@ -115,15 +113,14 @@ export const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Full History Section */}
       <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-3xl p-6 shadow-[6px_6px_0px_0px_#004349] space-y-4">
         <div className="flex items-center justify-between border-b-2 border-[#004349]/10 pb-3">
           <div>
             <h3 className="font-serif text-lg font-bold text-[#004349] flex items-center gap-2">
-              <span className="material-symbols-outlined text-xl">history</span>
+              <span className="material-symbols-outlined text-xl notranslate"translate="no">history</span>
               Semua Riwayat Kuis
             </h3>
-            <p className="text-xs text-[#3f484a]">Menampilkan seluruh aktivitas kuis kamu.</p>
+            <p className="text-xs text-[#3f484a]">Menampilkan seluruh aktivitas kamu.</p>
           </div>
         </div>
 
@@ -131,8 +128,8 @@ export const ProfilePage = () => {
           <p className="text-xs text-[#3f484a] p-6 text-center font-bold">Memuat riwayat kuis...</p>
         ) : history.length === 0 ? (
           <div className="p-8 text-center bg-[#faf3e6] border-2 border-[#004349]/20 rounded-2xl">
-            <span className="material-symbols-outlined text-4xl text-[#004349]/40 mb-1">assignment_late</span>
-            <p className="text-xs font-bold text-[#3f484a]">Belum ada riwayat kuis yang tersimpan.</p>
+            <span className="material-symbols-outlined text-4xl text-[#004349]/40 mb-1 notranslate"translate="no">assignment_late</span>
+            <p className="text-xs font-bold text-[#3f484a]">Belum ada riwayat kuis yang disimpan.</p>
           </div>
         ) : (
           <div className="space-y-3">

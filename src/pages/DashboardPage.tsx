@@ -35,14 +35,13 @@ export const DashboardPage = () => {
       setTotalSigns(signs ? signs.length : 0)
 
       if (profile) {
-        // Format YYYY-MM-DD lokal
         const today = new Date().toLocaleDateString('en-CA')
         
         setStreakCount(profile.streak_count || 0)
         setIsStreakActiveToday(profile.last_activity_date === today)
       }
     } catch (err) {
-      console.error('Error loading dashboard data:', err)
+      console.error('Error loading data dashboard', err)
     } finally {
       setLoading(false)
     }
@@ -53,16 +52,14 @@ export const DashboardPage = () => {
   return (
     <div className="space-y-6 max-w-2xl mx-auto pb-6 text-[#1e1b14] select-none">
       
-      {/* HEADER GREETING & BADGE STREAK */}
       <section className="flex justify-between items-end relative pt-2">
         <div>
           <h1 className="font-serif text-2xl font-bold text-[#1e1b14]">
             Halo, <span className="marker-highlight font-bold">{userName}!</span>
           </h1>
-          <p className="text-xs text-[#6f797a] mt-1">Siap untuk belajar hari ini?</p>
+          <p className="text-xs text-[#6f797a] mt-1">Siap belajar hari ini?</p>
         </div>
 
-        {/* Badge Streak Dashboard */}
         <div 
           className={`flex flex-col items-center border-2 border-[#004349] px-3 py-1.5 rounded-xl rotate-2 shadow-[2px_2px_0px_0px_#004349] transition-all duration-300 ${
             isStreakActiveToday 
@@ -83,17 +80,16 @@ export const DashboardPage = () => {
         </div>
       </section>
 
-      {/* LANJUT BELAJAR BANNER */}
       <section className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-5 shadow-[4px_4px_0px_0px_#004349] relative overflow-hidden">
         <div className="flex items-center gap-2 mb-2">
-          <span className="material-symbols-outlined text-[#741a06]">menu_book</span>
+          <span className="material-symbols-outlined text-[#741a06] notranslate"translate="no">menu_book</span>
           <h2 className="text-xs font-bold text-[#004349] uppercase tracking-wider">Lanjut Belajar</h2>
         </div>
         
-        <h3 className="font-serif text-lg font-bold text-[#1e1b14] mb-3">Alfabet & Kata Isyarat</h3>
+        <h3 className="font-serif text-lg font-bold text-[#1e1b14] mb-3">Alfabet,Angka & Kata Isyarat</h3>
         
         <div className="flex items-center justify-between text-[11px] text-[#6f797a] mb-1">
-          <span>Materi Tersedia</span>
+          <span>Jumlah materi yang dipelajari</span>
           <span className="font-bold text-[#004349]">{totalSigns} Isyarat</span>
         </div>
         <div className="h-3 w-full bg-[#f4ede0] border border-[#004349] rounded-full overflow-hidden p-0.5 mb-4">
@@ -110,50 +106,47 @@ export const DashboardPage = () => {
           Lanjutkan
         </Link>
       </section>
-
-      {/* GRID MENU SCHEME */}
       <section className="grid grid-cols-2 gap-3">
         <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-4 shadow-[4px_4px_0px_0px_#004349] flex flex-col justify-between">
           <div>
             <div className="w-10 h-10 rounded-xl bg-[#f4ede0] border border-[#004349] flex items-center justify-center mb-3 text-[#004349]">
-              <span className="material-symbols-outlined text-2xl">auto_stories</span>
+              <span className="material-symbols-outlined text-2xl notranslate" translate="no">auto_stories</span>
             </div>
             <h4 className="font-serif text-base font-bold text-[#004349] mb-1">Modul Belajar</h4>
-            <p className="text-[11px] text-[#3f484a]">Lihat katalog video gerakan isyarat.</p>
+            <p className="text-[11px] text-[#3f484a]">Lihat video gerakan isyarat.</p>
           </div>
           <Link 
             to="/dashboard/learn" 
             className="mt-4 text-[11px] font-bold text-[#004349] underline flex items-center gap-1"
           >
             <span>Buka</span>
-            <span className="material-symbols-outlined text-sm">arrow_forward</span>
+            <span className="material-symbols-outlined text-sm notranslate"translate="no"></span>
           </Link>
         </div>
 
         <div className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-4 shadow-[4px_4px_0px_0px_#004349] flex flex-col justify-between">
           <div>
             <div className="w-10 h-10 rounded-xl bg-[#f4ede0] border border-[#004349] flex items-center justify-center mb-3 text-[#004349]">
-              <span className="material-symbols-outlined text-2xl">quiz</span>
+              <span className="material-symbols-outlined text-2xl notranslate" translate="no">quiz</span>
             </div>
             <h4 className="font-serif text-base font-bold text-[#004349] mb-1">Latihan Kuis</h4>
-            <p className="text-[11px] text-[#3f484a]">Uji ingatan gerakan isyarat kamu.</p>
+            <p className="text-[11px] text-[#3f484a]">Uji ingatan gerakanmu.</p>
           </div>
           <Link 
             to="/dashboard/quiz" 
             className="mt-4 text-[11px] font-bold text-[#004349] underline flex items-center gap-1"
           >
             <span>Mulai</span>
-            <span className="material-symbols-outlined text-sm">arrow_forward</span>
+            <span className="material-symbols-outlined text-sm notranslate"translate="no"></span>
           </Link>
         </div>
       </section>
 
-      {/* RIWAYAT TERAKHIR */}
       <section className="bg-[#fff9ee] border-2 border-[#004349] rounded-2xl p-5 shadow-[4px_4px_0px_0px_#004349] space-y-3">
         <div className="flex items-center justify-between border-b border-[#004349]/20 pb-2">
           <h3 className="font-serif text-base font-bold text-[#004349] flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-lg">history</span>
-            Riwayat Terakhir
+            <span className="material-symbols-outlined text-lg notranslate" translate="no">history</span>
+            Riwayat Kuis
           </h3>
           <Link to="/dashboard/profile" className="text-[11px] font-bold text-[#004349] underline">
             Lihat Semua
@@ -161,9 +154,9 @@ export const DashboardPage = () => {
         </div>
 
         {loading ? (
-          <p className="text-xs text-[#3f484a] py-2 text-center">Memuat riwayat...</p>
+          <p className="text-xs text-[#3f484a] py-2 text-center">Memuat riwayat</p>
         ) : history.length === 0 ? (
-          <p className="text-xs text-[#3f484a] py-2 text-center">Belum ada riwayat kuis. Yuk ikuti kuis pertamamu!</p>
+          <p className="text-xs text-[#3f484a] py-2 text-center">Belum ada riwayat kuis. Yuk Mulai kuis pertamamu</p>
         ) : (
           <div className="space-y-2">
             {history.slice(0, 3).map((item, idx) => (
@@ -185,7 +178,6 @@ export const DashboardPage = () => {
           </div>
         )}
       </section>
-
     </div>
   )
 }

@@ -11,7 +11,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
   error,
   value,
   onChange,
-  placeholder = 'Masukkan kata sandi...',
+  placeholder = 'Masukkan kata sandi',
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false)

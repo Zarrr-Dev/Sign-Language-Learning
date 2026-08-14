@@ -23,7 +23,7 @@ export const authService = {
       ])
 
       if (profileError) {
-        console.warn('Gagal membuat profile manual (mungkin sudah dibuat via trigger):', profileError.message)
+        console.warn('Gagal membuat profile', profileError.message)
       }
     }
 

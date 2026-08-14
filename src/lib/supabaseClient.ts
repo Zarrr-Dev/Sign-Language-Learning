@@ -8,7 +8,6 @@ declare global {
   var __supabaseInstance: SupabaseClient | undefined
 }
 
-
 export const supabase =
   globalThis.__supabaseInstance ||
   (globalThis.__supabaseInstance = createClient(supabaseUrl, supabaseAnonKey))

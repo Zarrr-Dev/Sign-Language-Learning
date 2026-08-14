@@ -60,7 +60,7 @@ export const signService = {
 
       return (data as Sign[]) || []
     } catch (err) {
-      console.error('Unexpected signService error:', err)
+      console.error('Unexpected signService', err)
       return []
     }
   },

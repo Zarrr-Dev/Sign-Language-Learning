@@ -50,7 +50,7 @@
     background-size: 100% 100%;
   }
 }
-/* 1. PAKSA SEMBUNYIKAN BANNER GOOGLE TRANSLATE */
+
       .goog-te-banner-frame,
       .goog-te-banner,
       .skiptranslate iframe,
@@ -65,7 +65,6 @@
         top: -9999px !important;
       }
 
-      /* Fix Body Margin yang dipaksa turun oleh Google Translate */
       body {
         top: 0px !important;
         position: static !important;
@@ -77,7 +76,6 @@
         box-shadow: none !important;
       }
 
-      /* 2. STYLE WIDGET POJOK KANAN BAWAH */
       #google_translate_element {
         position: fixed;
         bottom: 12px;
@@ -97,7 +95,7 @@
       }
 
       .goog-te-gadget span {
-        display: none !important; /* Hapus tulisan 'Powered by Google' */
+        display: none !important;
       }
 
       .goog-te-combo {
@@ -112,10 +110,10 @@
       }
       .material-symbols-outlined,
       .material-icons,
-  [class*="lucide-"],
-  .notranslate,
-  [translate="no"] {
-    -webkit-translate: no !important;
-    translate: no !important;
-    class: notranslate !important;
-  }
+      [class*="lucide-"],
+      .notranslate,
+      [translate="no"] {
+        -webkit-translate: no !important;
+        translate: no !important;
+        class: notranslate !important;
+      }

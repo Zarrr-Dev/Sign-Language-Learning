@@ -1,6 +1,6 @@
-# HandTalk Learn
+# SGL Learning
 
-Platform belajar Bahasa Isyarat (ISINDO/SIBI) interaktif berbasis web dengan desain modern.
+Platform belajar Bahasa Isyarat (BISINDO) interaktif berbasis web dengan desain modern.
 
 ---
 
@@ -26,14 +26,14 @@ Platform belajar Bahasa Isyarat (ISINDO/SIBI) interaktif berbasis web dengan des
 
 ### 1. Clone & Install
 ```bash
-git clone [https://github.com/Zarrr-Dev/HandTalk-learn.git](https://github.com/Zarrr-Dev/HandTalk-learn.git)
+git clone [https://github.com/Zarrr-Dev/SGL-Learning.git](https://github.com/Zarrr-Dev/SGL-Learning.git)
 cd HandTalk-learn
 npm install
 
 2. Setting .env
 
-Buat file .env di folder utama dan isi kunci Supabase kamu:
-Cuplikan kode
+Buat file .env di folder utama dan isi Key Supabase kamu:
+Contoh Kode
 
 VITE_SUPABASE_URL=[https://xxxxxxxx.supabase.co]
 VITE_SUPABASE_ANON_KEY=...

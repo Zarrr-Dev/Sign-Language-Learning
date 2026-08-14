@@ -25,10 +25,9 @@ export const LoginPage = () => {
 
   return (
     <div className="bg-[#fff9ee] text-[#1e1b14] dot-grid min-h-screen flex flex-col justify-center items-center px-4 py-8 relative select-none">
-      {/* Tombol Kembali ke Landing */}
       <div className="w-full max-w-sm mb-4 flex justify-between items-center">
         <Link to="/" className="inline-flex items-center gap-1 font-bold text-xs uppercase text-[#004349]">
-          <span className="material-symbols-outlined text-base">arrow_back</span>
+          <span className="material-symbols-outlined text-base notranslate" translate="no">arrow_back</span>
           Kembali
         </Link>
         <span className="px-3 py-1 bg-[#f4ede0] border border-[#004349]/30 rounded-full text-[10px] font-bold text-[#004349]">
@@ -36,12 +35,13 @@ export const LoginPage = () => {
         </span>
       </div>
 
-      {/* Card Form Login */}
       <main className="w-full max-w-sm bg-[#faf3e6] border-2 border-[#004349] rounded-2xl p-6 shadow-[6px_6px_0px_0px_#004349] relative z-10">
         <div className="text-center mb-6">
           <div className="w-12 h-12 bg-[#ffbe4f] border-2 border-[#004349] rounded-full flex items-center justify-center mx-auto mb-3 shadow-[2px_2px_0px_0px_#004349]">
-            <span className="material-symbols-outlined text-[#004349] text-2xl">lock</span>
-          </div>
+  <span className="material-symbols-outlined text-[#004349] text-2xl notranslate" translate="no">
+    lock
+  </span>
+</div>
           <h1 className="font-serif text-2xl font-bold text-[#004349]">Selamat Datang Kembali</h1>
           <p className="text-xs text-[#3f484a] mt-1">Mari lanjutkan petualangan bahasamu.</p>
         </div>
@@ -57,7 +57,7 @@ export const LoginPage = () => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="pelajar@handtalk.id"
+              placeholder="Emailmu@gmail.com"
               className="w-full bg-[#fff9ee] border-2 border-[#004349] rounded-xl px-3.5 py-2.5 text-sm font-medium text-[#1e1b14] focus:outline-none focus:ring-2 focus:ring-[#ffbe4f]"
             />
           </div>
@@ -72,7 +72,6 @@ export const LoginPage = () => {
               </a>
             </div>
 
-            {/* Input Wrapper dengan Tombol Mata */}
             <div className="relative flex items-center">
               <input
                 id="password"
@@ -84,7 +83,6 @@ export const LoginPage = () => {
                 className="w-full bg-[#fff9ee] border-2 border-[#004349] rounded-xl pl-3.5 pr-11 py-2.5 text-sm font-medium text-[#1e1b14] focus:outline-none focus:ring-2 focus:ring-[#ffbe4f]"
               />
               
-              {/* Tombol Toggle Mata */}
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
@@ -105,7 +103,7 @@ export const LoginPage = () => {
             disabled={loading}
             className="w-full bg-[#ffbe4f] text-[#724d00] font-bold text-xs uppercase tracking-wider py-3.5 px-4 rounded-xl border-2 border-[#004349] shadow-[4px_4px_0px_0px_#004349] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2 mt-6 disabled:opacity-50"
           >
-            <span>{loading ? 'Memproses...' : 'Masuk'}</span>
+            <span>{loading ? 'Memproses....' : 'Masuk'}</span>
             <span className="material-symbols-outlined text-base">arrow_forward</span>
           </button>
         </form>

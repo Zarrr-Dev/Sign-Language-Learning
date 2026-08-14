@@ -11,20 +11,17 @@ import {
 export const QuizPage = () => {
   const { user } = useAuth()
 
-  // Config & State Flow
   const [quizStarted, setQuizStarted] = useState(false)
   const [category, setCategory] = useState<string>('Semua')
   const [questionCount, setQuestionCount] = useState<number>(5)
   const [signs, setSigns] = useState<QuizQuestion[]>([])
 
-  // Gameplay State
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [score, setScore] = useState(0)
   const [isQuizFinished, setIsQuizFinished] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
-  // Reset State Kuis
   const handleResetQuiz = () => {
     setQuizStarted(false)
     setIsQuizFinished(false)
@@ -97,23 +94,21 @@ export const QuizPage = () => {
         setIsSaving(true)
         await quizService.saveQuizAttempt(user.id, finalScore, totalQuestions)
       } catch (err) {
-        console.error('Gagal simpan hasil kuis:', err)
+        console.error('Gagal menyimpan kuis', err)
       } finally {
         setIsSaving(false)
       }
     }
   }
 
-  // 1. TAMPILAN SETUP (SELEKSI MODE)
   if (!quizStarted) {
     return (
       <div className="max-w-5xl mx-auto space-y-8 pb-10 animate-in fade-in duration-300">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-[#004349]">Pilih Mode Latihan</h1>
+          <h1 className="font-serif text-3xl font-bold text-[#004349]">Pilih Latihan</h1>
           <p className="text-xs text-[#3f484a]">Tentukan jumlah soal dan kategori materi kuis.</p>
         </div>
 
-        {/* Option Jumlah Soal */}
         <div className="bg-[#faf3e6] border-2 border-[#004349] rounded-3xl p-6 shadow-[6px_6px_0px_0px_#004349] space-y-3">
           <div className="flex items-center gap-2 text-[#004349]">
             <HelpCircle size={18} />
@@ -162,8 +157,6 @@ export const QuizPage = () => {
       </div>
     )
   }
-
-  // 2. TAMPILAN RESULT EVALUASI
   if (isQuizFinished) {
     const accuracy = Math.round((score / signs.length) * 100)
     const isPassed = accuracy >= 70
@@ -175,10 +168,10 @@ export const QuizPage = () => {
         </div>
         <div>
           <h2 className="font-serif text-3xl font-bold text-[#004349]">
-            {isPassed ? 'Evaluasi Bagus Sekali!' : 'Coba Lagi & Tingkatkan!'}
+            {isPassed ? 'Bagus Sekali!' : 'Coba Lagi & Tingkatkan!'}
           </h2>
           <p className="text-xs font-medium text-[#3f484a] mt-1">
-            {isSaving ? 'Menyimpan statistik...' : 'Hasil kuis tersimpan dan streak harianmu aktif!'}
+            {isSaving ? 'Menyimpan statistik...' : 'Hasil kuis tersimpan dan streakmu aktif!'}
           </p>
         </div>
 
@@ -188,7 +181,7 @@ export const QuizPage = () => {
               <Flame className="w-6 h-6 fill-[#741a06]" />
             </div>
             <div className="text-left">
-              <h4 className="font-bold text-xs text-[#004349]">Streak Harian Diperbarui</h4>
+
               <p className="text-[10px] text-[#3f484a]">Progres belajar tersimpan di Dashboard.</p>
             </div>
           </div>
@@ -230,7 +223,6 @@ export const QuizPage = () => {
     )
   }
 
-  // 3. TAMPILAN GAMEPLAY
   const currentSign = signs[currentIndex]
 
   return (
@@ -297,7 +289,7 @@ export const QuizPage = () => {
         <div className="w-full lg:w-[400px] flex flex-col justify-center space-y-6">
           <div className="space-y-1">
             <h2 className="font-serif text-2xl font-bold text-[#004349]">{currentSign.questionText}</h2>
-            <p className="text-xs text-[#3f484a]">Pilih jawaban yang melambangkan instruksi gambar/video di samping.</p>
+            <p className="text-xs text-[#3f484a]">Pilih jawaban yang menggambarkan instruksi gambar di samping.</p>
           </div>
 
           <div className="grid grid-cols-1 gap-3.5">
