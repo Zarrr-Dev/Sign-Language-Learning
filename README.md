@@ -26,7 +26,7 @@ Platform belajar Bahasa Isyarat (BISINDO) interaktif berbasis web dengan desain 
 
 ### 1. Clone & Install
 ```bash
-git clone [https://github.com/Zarrr-Dev/SGL-Learning.git](https://github.com/Zarrr-Dev/SGL-Learning.git)
+git clone [https://github.com/Zarrr-Dev/Sign Language-Learning.git](https://github.com/Zarrr-Dev/SGL-Learning.git)
 cd HandTalk-learn
 npm install
 
